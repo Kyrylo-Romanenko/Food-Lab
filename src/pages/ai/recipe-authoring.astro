@@ -1,0 +1,13 @@
+---
+import { getEntry, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+const entry = await getEntry("guides", "recipe-authoring");
+if (!entry) throw new Error("Missing recipe authoring guide");
+const { Content } = await render(entry);
+---
+
+<Base title="Recipe authoring" lang="en">
+  <article class="guide">
+    <Content />
+  </article>
+</Base>

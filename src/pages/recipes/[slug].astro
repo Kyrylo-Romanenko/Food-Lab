@@ -1,0 +1,78 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import catalog from "../../content/ingredients.json";
+export async function getStaticPaths() {
+  return (await getCollection("recipes")).map((entry) => ({
+    params: { slug: entry.data.slug },
+    props: { entry },
+  }));
+}
+const { entry } = Astro.props;
+const recipe = entry.data.recipe;
+const names = new Map(catalog.map((item) => [item.id, item.name]));
+const labels = {
+  g: "г",
+  kg: "кг",
+  ml: "мл",
+  l: "л",
+  tsp: "ч. л.",
+  tbsp: "ст. л.",
+  piece: "шт.",
+};
+const difficulty = { easy: "Легко", medium: "Помірно", hard: "Складно" };
+---
+
+<Base title={recipe.title}>
+  <p class="eyebrow">Рецепт · {difficulty[recipe.difficulty]}</p>
+  <h1>{recipe.title}</h1>
+  <p class="lead">{recipe.description}</p>
+  <p class="notice">
+    Ще не перевірено приготуванням. Порції та час — орієнтовні.
+  </p>
+  <dl class="facts">
+    <div>
+      <dt>Порції</dt>
+      <dd>{recipe.servings}</dd>
+    </div>
+    <div>
+      <dt>Підготовка</dt>
+      <dd>{recipe.time.prep} хв</dd>
+    </div>
+    <div>
+      <dt>Приготування</dt>
+      <dd>{recipe.time.cook} хв</dd>
+    </div>
+  </dl>
+  <section aria-labelledby="ingredients">
+    <h2 id="ingredients">Інгредієнти</h2>
+    <ul class="ingredients">
+      {recipe.ingredients.map((item) => (
+        <li>
+          <span>{names.get(item.ingredientId)}</span>
+          <strong>
+            {item.amount.kind === "to-taste"
+              ? "за смаком"
+              : `${item.amount.quantity.toLocaleString("uk-UA")} ${labels[item.amount.unit]}`}
+          </strong>
+        </li>
+      ))}
+    </ul>
+  </section>
+  <section aria-labelledby="steps">
+    <h2 id="steps">Приготування</h2>
+    <ol class="steps">
+      {recipe.steps.map((step) => (
+        <li id={step.id}>{step.text}</li>
+      ))}
+    </ol>
+  </section>
+  {entry.data.notes && (
+    <section aria-labelledby="notes">
+      <h2 id="notes">Примітки</h2>
+      {entry.data.notes.split(/\n\s*\n/).map((note) => (
+        <p>{note}</p>
+      ))}
+    </section>
+  )}
+</Base>

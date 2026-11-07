@@ -1,0 +1,12 @@
+[
+  { "id": "buckwheat", "name": "Гречана крупа" },
+  { "id": "carrot", "name": "Морква" },
+  { "id": "water", "name": "Вода" },
+  { "id": "sunflower-oil", "name": "Соняшникова олія" },
+  { "id": "salt", "name": "Сіль" },
+  { "id": "spaghetti", "name": "Спагеті" },
+  { "id": "guanciale", "name": "Гуанчале" },
+  { "id": "egg-yolk", "name": "Яєчний жовток" },
+  { "id": "pecorino-romano", "name": "Сир пекоріно романо" },
+  { "id": "black-pepper", "name": "Чорний перець" }
+]

@@ -1,0 +1,10 @@
+---
+import Base from "../layouts/Base.astro";
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+---
+
+<Base title="Сторінку не знайдено">
+  <h1>Сторінку не знайдено</h1>
+  <p>Перевірте адресу або поверніться до рецептів.</p>
+  <a href={`${base}/`}>До рецептів</a>
+</Base>

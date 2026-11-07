@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.astro/
+coverage/
+package-lock.json
+.specify/scripts/
+.specify/templates/
+.specify/workflows/
+.specify/integrations/
+.agents/skills/
+LICENSE

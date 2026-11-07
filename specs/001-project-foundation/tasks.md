@@ -1,0 +1,137 @@
+# Tasks: project-foundation
+
+Inputs: spec.md, plan.md, data-model.md, contracts/authoring.md, research.md.
+All paths in task inputs are relative to this feature directory unless repository paths are stated.
+
+## Phase 1: Setup
+
+- [x] T001 Configure package.json, Astro, TypeScript, lint, format, and ignore files
+
+  Goal: Configure package.json, Astro, TypeScript, lint, format, and ignore files.
+  Inputs: plan.md; research.md.
+  Allowed scope: root configuration and package-lock.json.
+  Requirements: FR-007, FR-010; C01, C08.
+  Acceptance checks: Install dependencies without peer errors; strict configuration is active.
+  Non-goals: No application behavior.
+  Dependencies: None.
+
+## Phase 2: Foundational validation
+
+- [x] T002 Write content contract tests in tests/content.test.ts
+
+  Goal: Write content contract tests in tests/content.test.ts.
+  Inputs: data-model.md; spec.md.
+  Allowed scope: tests/content.test.ts.
+  Requirements: FR-002, FR-003; C02.
+  Acceptance checks: Tests cover valid, malformed, unknown nested/top-level, unit, reference, duplicate and numeric cases.
+  Non-goals: No schema weakening.
+  Dependencies: T001.
+
+- [x] T003 Implement src/schemas/recipe.ts and src/lib/content.ts
+
+  Goal: Implement src/schemas/recipe.ts and src/lib/content.ts.
+  Inputs: data-model.md; tests/content.test.ts.
+  Allowed scope: schemas, content loader support, ingredient catalog, example recipe.
+  Requirements: FR-002, FR-003; C02.
+  Acceptance checks: T002 tests pass; strict objects; positive finite measured quantities; non-negative integer times; unique step IDs; positive integer servings.
+  Non-goals: No calculations or storage.
+  Dependencies: T002.
+
+## Phase 3: US1 static reading
+
+- [x] T004 [US1] Implement src/content.config.ts, src/layouts/Base.astro, src/pages/index.astro, src/pages/recipes/[slug].astro, src/pages/404.astro, src/styles/global.css
+
+  Goal: Implement src/content.config.ts, src/layouts/Base.astro, src/pages/index.astro, src/pages/recipes/[slug].astro, src/pages/404.astro, src/styles/global.css.
+  Inputs: plan.md; validated content.
+  Allowed scope: listed static UI files and small path helper if needed.
+  Requirements: FR-001, FR-004; C01, C05.
+  Acceptance checks: Build generates catalog and complete recipe; subpath links work; no client script.
+  Non-goals: No future navigation or controls.
+  Dependencies: T003.
+
+## Phase 4: US2 external authoring
+
+- [x] T005 [US2] Write tests/authoring.test.ts for generated contract and example
+
+  Goal: Write tests/authoring.test.ts for generated contract and example.
+  Inputs: contracts/authoring.md; data-model.md.
+  Allowed scope: tests/authoring.test.ts.
+  Requirements: FR-005, FR-006, FR-007; C06.
+  Acceptance checks: Tests require real schema/catalog, metadata, all inserts, and valid example.
+  Non-goals: No duplicated validation.
+  Dependencies: T003.
+
+- [x] T006 [US2] Implement docs/ai/recipe-authoring.md, src/lib/authoring.ts, and src/pages/ai/recipe-authoring.astro
+
+  Goal: Implement docs/ai/recipe-authoring.md, src/lib/authoring.ts, and src/pages/ai/recipe-authoring.astro.
+  Inputs: contracts/authoring.md; tests/authoring.test.ts.
+  Allowed scope: listed guide files and guide collection in src/content.config.ts.
+  Requirements: FR-005, FR-006; C06, C07.
+  Acceptance checks: T005 passes; generated guide includes complete pack and response format.
+  Non-goals: No AI API, media support, or runtime parser.
+  Dependencies: T004, T005.
+
+## Phase 5: US3 bounded continuation
+
+- [x] T007 [US3] Add scripts/check-output.mjs and .github/workflows/verify.yml
+
+  Goal: Add scripts/check-output.mjs and .github/workflows/verify.yml.
+  Inputs: spec.md; plan.md.
+  Allowed scope: generated checks, CI, package scripts.
+  Requirements: FR-007, FR-008; C08.
+  Acceptance checks: verify executes checks in order; output checks follow build; npm ci works.
+  Non-goals: No deployment.
+  Dependencies: T006.
+
+- [x] T008 [US3] Write AGENTS.md, README.md, LICENSE-CONTENT.md, NOTICE.md, and docs/adr/
+
+  Goal: Write AGENTS.md, README.md, LICENSE-CONTENT.md, NOTICE.md, and docs/adr/.
+  Inputs: constitution; existing LICENSE; spec.md.
+  Allowed scope: listed operational docs and at most three ADRs.
+  Requirements: FR-008, FR-009; C04, C07, C08.
+  Acceptance checks: MIT unchanged; content notice links official license; precedence and private-data rules explicit.
+  Non-goals: No branding or unimplemented capability claims.
+  Dependencies: T007.
+
+## Phase 6: Verification and handoff
+
+- [x] T009 Verify foundation and write docs/handoff.md
+
+  Goal: Verify foundation and write docs/handoff.md.
+  Inputs: all feature artifacts; quickstart.md.
+  Allowed scope: fixes within approved foundation; task status; docs/handoff.md.
+  Requirements: FR-001 through FR-010; C01-C08.
+  Acceptance checks: Format then verify; inspect routes and subpath; smoke-test if available; inspect Git hygiene; report check limits.
+  Non-goals: No next feature, commit, push, or deployment.
+  Dependencies: T008.
+
+## Dependencies and execution
+
+Execute T001-T009 in order. T005 may be written independently of T004 after T003.
+Other tasks share files or depend on completed outputs. No parallel implementation is required.
+US1 is tested by static output. US2 is tested by the complete pack and example.
+US3 is tested by verify and handoff review. Do not commit automatically.
+
+## Phase 7: Convergence
+
+- [x] T010 Correct plain source URL handling and verify the complete Context Pack per FR-002, FR-006, SC-003, and plan: plain-text recipe body (partial)
+
+  Goal: Accept and preserve plain source URLs in recipe body text, keep unsupported markup rejected, and confirm the rendered authoring pack is complete.
+  Inputs: spec.md; plan.md; data-model.md; contracts/authoring.md; docs/ai/recipe-authoring.md; src/lib/content.ts; src/lib/authoring.ts; tests/content.test.ts; tests/authoring.test.ts; rendered /ai/recipe-authoring/ page.
+  Allowed scope: src/lib/content.ts, tests/content.test.ts, docs/ai/recipe-authoring.md, specs/001-project-foundation/data-model.md, specs/001-project-foundation/contracts/authoring.md, tests/authoring.test.ts, scripts/check-output.mjs, and docs/handoff.md.
+  Requirements: Plain source URLs MUST be stored without data loss and rendered as escaped text. Recipe bodies MUST continue to reject HTML and unsupported Markdown. The guide MUST state that source URLs are plain text, not clickable links. The rendered pack MUST include current metadata, fields, enums, catalog, paths, workflows, response sections, validation commands, privacy rules, and unsupported-operation rules without unresolved markers.
+  Acceptance checks: Add a regression test for a URL containing query and fragment characters and confirm parsed body equality. Confirm the rendered page contains the complete current contract and no insertion markers or invalid fields. Run `npm run verify`.
+  Non-goals: No rich Markdown, media, link generation, portion scaling, product features, or invented attribution.
+  Dependencies: T009.
+
+## Phase 8: Public recipe content
+
+- [x] T011 Add the first pasta carbonara recipe and its catalog ingredients per FR-001, FR-003, and SC-001
+
+  Goal: Add one Ukrainian, unverified pasta carbonara recipe that passes the existing content contract and appears in generated pages.
+  Inputs: spec.md; data-model.md; src/schemas/recipe.ts; src/content/ingredients.json; docs/ai/recipe-authoring.md.
+  Allowed scope: src/content/ingredients.json, src/content/recipes/pasta-karbonara/index.md, tests/content.test.ts, scripts/check-output.mjs, specs/001-project-foundation/tasks.md, and docs/handoff.md.
+  Requirements: Recipe text MUST use Ukrainian. Ingredient IDs MUST be stable and present in the catalog. Recipe fields, amounts, units, and steps MUST pass the existing strict schema. Status MUST remain unverified.
+  Acceptance checks: Production validation discovers the recipe and all ingredient references. Build output contains its catalog route and complete detail page. `npm run verify` passes.
+  Non-goals: No recipe contract changes, source attribution, rich markup, media, portion scaling, or other product features.
+  Dependencies: T010.

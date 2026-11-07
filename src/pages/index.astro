@@ -1,0 +1,37 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+const recipes = (await getCollection("recipes")).sort((a, b) =>
+  a.data.recipe.title.localeCompare(b.data.recipe.title, "uk"),
+);
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+---
+
+<Base title="Рецепти">
+  <p class="eyebrow">З домашнього записника</p>
+  <h1>Рецепти</h1>
+  <p class="lead">
+    Прості страви, інгредієнти та послідовні кроки — усе на одній сторінці.
+  </p>
+  {recipes.length === 0 ? (
+    <p>Рецептів поки немає.</p>
+  ) : (
+    <ul class="catalog">
+      {recipes.map(({ data }) => (
+        <li>
+          <article>
+            <p class="eyebrow">Ще не перевірено</p>
+            <h2>
+              <a href={`${base}/recipes/${data.slug}/`}>{data.recipe.title}</a>
+            </h2>
+            <p>{data.recipe.description}</p>
+            <p class="meta">
+              Орієнтовно {data.recipe.time.prep + data.recipe.time.cook} хв ·{" "}
+              {data.recipe.servings} порції
+            </p>
+          </article>
+        </li>
+      ))}
+    </ul>
+  )}
+</Base>
