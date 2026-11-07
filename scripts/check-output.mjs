@@ -11,10 +11,21 @@ const recipes = [
   read("recipes/pasta-karbonara/index.html"),
 ];
 const guide = read("ai/recipe-authoring/index.html");
+const designReference = read("ai/design-reference/index.html");
 const missing = read("404.html");
 assert.ok(catalog.includes(`${base}/recipes/hrechka-z-morkvoiu/`));
 assert.ok(catalog.includes(`${base}/recipes/pasta-karbonara/`));
 assert.ok(catalog.includes(`${base}/ai/recipe-authoring/`));
+assert.ok(catalog.includes(`${base}/ai/design-reference/`));
+for (const text of [
+  "Дизайн-референс для AI",
+  'data-palette-choice="navy"',
+  'data-palette-choice="green"',
+  "JetBrains Mono",
+  "npm run verify",
+  "/Food-Lab/",
+])
+  assert.ok(designReference.includes(text), text);
 for (const text of [
   'id="recipe-search"',
   'data-filter="verified"',
@@ -70,8 +81,11 @@ for (const item of JSON.parse(
   assert.ok(guide.includes(item.name), item.name);
 }
 assert.ok(!/@@[A-Z_]+@@/.test(guide));
-for (const html of [catalog, ...recipes, guide, missing]) {
-  assert.ok(!/<astro-island\b/.test(html), "No hydrated island");
+for (const html of [catalog, guide, designReference, missing]) {
+  assert.ok(
+    !/<astro-island\b/.test(html),
+    "No recipe island outside recipe pages",
+  );
   assert.ok(html.includes('class="theme-toggle"'), "Theme control");
   assert.ok(html.includes("cookbook-theme"), "Persistent theme script");
   assert.ok(html.includes(`${base}/design-kit/fonts.css`), "Local font CSS");
@@ -83,6 +97,12 @@ for (const html of [catalog, ...recipes, guide, missing]) {
     !/(?:src|href)="https?:[^" ]+\.(?:png|jpg|webp|woff2?)/.test(html),
     "No external assets",
   );
+}
+for (const recipe of recipes) {
+  assert.match(recipe, /<astro-island\b[^>]*client="only"/);
+  assert.ok(recipe.includes('id="static-ingredients"'));
+  assert.ok(!recipe.includes('class="calculator-toolbar"'));
+  assert.ok(!recipe.includes('class="calculator-mode-button"'));
 }
 const fontCss = read("design-kit/fonts.css");
 assert.ok(read("design-kit/tokens.css").includes("--mono"));

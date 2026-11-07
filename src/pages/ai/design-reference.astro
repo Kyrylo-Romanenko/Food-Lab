@@ -1,0 +1,326 @@
+---
+import Base from "../../layouts/Base.astro";
+---
+
+<Base title="Дизайн-референс для AI">
+  <article class="design-reference">
+    <header class="reference-intro">
+      <p class="eyebrow">FOOD LAB · ДИЗАЙН-СИСТЕМА</p>
+      <h1>Дизайн-референс для AI</h1>
+      <p class="lead">
+        Візуальні правила й приклади для створення сторінок та покращення
+        інтерфейсу Food Lab. Використовуйте цей документ разом із конкретним
+        завданням.
+      </p>
+      <div class="palette-picker" role="group" aria-label="Приклад палітри">
+        <span>Палітра прикладу</span>
+        <button type="button" data-palette-choice="navy" aria-pressed="true">
+          Navy
+        </button>
+        <button type="button" data-palette-choice="green" aria-pressed="false">
+          Green
+        </button>
+      </div>
+    </header>
+
+    <section aria-labelledby="principles-title">
+      <h2 id="principles-title">01 · Напрям</h2>
+      <div class="reference-grid">
+        <article class="reference-card">
+          <h3>Їжа — головна</h3>
+          <p>
+            Спокійні поверхні підтримують рецепт. Не додавайте зайвих декорацій.
+          </p>
+        </article>
+        <article class="reference-card">
+          <h3>Чітка структура</h3>
+          <p>Моноширинні заголовки й числа створюють виразний ритм сторінки.</p>
+        </article>
+        <article class="reference-card">
+          <h3>Зручно на кухні</h3>
+          <p>
+            Зберігайте читабельний текст, помітний фокус і зручні сенсорні цілі.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="components-title">
+      <h2 id="components-title">02 · Компоненти</h2>
+      <div class="reference-grid">
+        <article class="recipe-card sample-recipe-card">
+          <div
+            class="image-placeholder card-image"
+            role="img"
+            aria-label="Приклад заглушки зображення страви"
+          >
+            <span class="placeholder-icon" aria-hidden="true">
+              🍽️
+            </span>
+            <span class="visually-hidden">Фото страви наразі немає</span>
+          </div>
+          <div class="card-content">
+            <span class="card-title">Паста карбонара</span>
+            <span class="card-description">
+              Спагеті з гуанчале, жовтком і пекоріно романо.
+            </span>
+            <span class="card-meta">35 хв · 2 порції</span>
+            <span class="status">Ще не перевірено</span>
+          </div>
+        </article>
+
+        <div class="reference-card recipe-sample">
+          <p class="eyebrow">РЕЦЕПТ · ПОМІРНО</p>
+          <h3>Паста карбонара</h3>
+          <span class="status">Ще не перевірено</span>
+          <dl class="sample-meta">
+            <div>
+              <dt>Порції</dt>
+              <dd>2</dd>
+            </div>
+            <div>
+              <dt>Підготовка</dt>
+              <dd>15 хв</dd>
+            </div>
+            <div>
+              <dt>Приготування</dt>
+              <dd>20 хв</dd>
+            </div>
+          </dl>
+          <div
+            class="image-placeholder sample-hero"
+            role="img"
+            aria-label="Компактна заглушка фото рецепта"
+          >
+            <span class="placeholder-icon" aria-hidden="true">
+              🍽️
+            </span>
+            <span class="visually-hidden">Фото страви наразі немає</span>
+          </div>
+          <h3>Інгредієнти</h3>
+          <label class="sample-ingredient">
+            <input type="checkbox" />
+            <span>Спагеті</span>
+            <strong>180 г</strong>
+          </label>
+          <h3>Приготування</h3>
+          <ol class="sample-steps">
+            <li>
+              <span>Зваріть пасту до пружного стану.</span>
+            </li>
+            <li>
+              <span>Змішайте пасту з соусом.</span>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="rules-title">
+      <h2 id="rules-title">03 · Правила для змін</h2>
+      <div class="reference-card rules">
+        <ul>
+          <li>
+            Використовуйте кольори з <code>public/design-kit/tokens.css</code>.
+            Не додавайте сирі кольори в компоненти.
+          </li>
+          <li>
+            Використовуйте локальні Inter для основного тексту й JetBrains Mono
+            для заголовків, часу та кількостей.
+          </li>
+          <li>
+            Зберігайте адаптивність, видимий клавіатурний фокус і мінімальну
+            висоту цілей натискання 44px.
+          </li>
+          <li>
+            Перевіряйте темну, світлу, navy і green комбінації. Темна navy тема
+            є типовою.
+          </li>
+          <li>
+            Зберігайте статичний Astro, базовий шлях <code>/Food-Lab/</code>,
+            чинні маршрути та дані рецептів.
+          </li>
+          <li>
+            Схема рецептів не має поля фото. Не вигадуйте фото, підтвердження
+            рецепта чи кулінарну функцію.
+          </li>
+          <li>
+            Не додавайте залежності чи клієнтський код без потреби завдання.
+            Сторінки мають читатися без JavaScript.
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section aria-labelledby="workflow-title">
+      <h2 id="workflow-title">04 · Як передати AI</h2>
+      <div class="reference-card">
+        <p>
+          Передайте AI адресу цієї сторінки разом із точним описом потрібного
+          результату.
+        </p>
+        <p>
+          Попросіть його спершу переглянути наявний код і повторно використати
+          чинні шаблони, токени та поведінку. Нехай він збереже дані й маршрути,
+          перевірить базовий шлях і запустить <code>npm run verify</code>.
+        </p>
+        <p>
+          Після змін відкрийте потрібну сторінку в темній і світлій темах на
+          вузькому та широкому екрані.
+        </p>
+      </div>
+    </section>
+  </article>
+  <script is:inline>
+    const paletteButtons = document.querySelectorAll("[data-palette-choice]");
+    for (const button of paletteButtons) {
+      button.addEventListener("click", () => {
+        const palette = button.dataset.paletteChoice;
+        if (palette === "green")
+          document.documentElement.dataset.palette = "green";
+        else document.documentElement.removeAttribute("data-palette");
+        for (const choice of paletteButtons) {
+          choice.setAttribute("aria-pressed", String(choice === button));
+        }
+      });
+    }
+  </script>
+</Base>
+
+<style>
+  .design-reference {
+    max-width: var(--content-width);
+  }
+  .reference-intro {
+    margin-bottom: var(--s-7);
+  }
+  .design-reference section {
+    margin-top: var(--s-7);
+  }
+  .reference-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-4);
+  }
+  .reference-card {
+    min-width: 0;
+    padding: var(--s-4);
+    border: 1px solid var(--border);
+    border-radius: var(--r-m);
+    background: var(--surface);
+  }
+  .reference-card h3 {
+    margin-bottom: var(--s-2);
+  }
+  .reference-card p:last-child {
+    margin-bottom: 0;
+  }
+  .reference-card p,
+  .reference-card li {
+    color: var(--muted);
+  }
+  .palette-picker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2);
+    margin-top: var(--s-5);
+  }
+  .palette-picker span {
+    margin-right: var(--s-2);
+    color: var(--muted);
+    font: 500 13px var(--mono);
+  }
+  .palette-picker button {
+    min-width: 76px;
+    min-height: 44px;
+    padding: var(--s-2) var(--s-3);
+    border: 1px solid var(--control-border);
+    border-radius: var(--r-s);
+    background: var(--surface);
+    color: var(--text);
+    font: 500 13px var(--mono);
+    cursor: pointer;
+  }
+  .palette-picker button:hover {
+    background: var(--surface-hover);
+  }
+  .palette-picker button:active {
+    background: var(--primary-soft);
+  }
+  .palette-picker button[aria-pressed="true"] {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--on-primary);
+  }
+  .sample-recipe-card {
+    min-width: 0;
+  }
+  .sample-hero {
+    height: 136px;
+    margin-block: var(--s-4) var(--s-5);
+    border: 1px solid var(--border);
+    border-radius: var(--r-m);
+  }
+  .sample-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-4);
+    padding-block: var(--s-4);
+    border-block: 1px solid var(--border);
+  }
+  .sample-meta dd {
+    font: 700 14px/1.4 var(--mono);
+  }
+  .recipe-sample > h3:not(:first-child) {
+    margin-top: var(--s-5);
+  }
+  .sample-ingredient {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    min-height: 48px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sample-ingredient span {
+    flex: 1;
+  }
+  .sample-ingredient strong {
+    font: 500 14px var(--mono);
+  }
+  .sample-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: step;
+  }
+  .sample-steps li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    gap: var(--s-3);
+    padding: var(--s-2) 0;
+    color: var(--text);
+  }
+  .sample-steps li::before {
+    content: counter(step, decimal-leading-zero);
+    font: 700 24px/1.2 var(--mono);
+    letter-spacing: -0.01em;
+  }
+  .sample-steps li span {
+    min-width: 0;
+    font: 400 20px/1.6 var(--sans);
+  }
+  .rules ul {
+    padding-left: 1.25rem;
+    margin-bottom: 0;
+  }
+  .rules li + li {
+    margin-top: var(--s-2);
+  }
+  @media (min-width: 600px) {
+    .reference-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

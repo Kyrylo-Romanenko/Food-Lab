@@ -171,3 +171,51 @@ US3 is tested by verify and handoff review. Do not commit automatically.
   Acceptance checks: Run `npm run verify`; inspect requested widths, theme/palette combinations, and interaction states where browser tooling permits.
   Non-goals: No recipe data changes, new behavior, assets, dependencies, deployment, or push.
   Dependencies: T013.
+
+## Phase 12: AI design reference
+
+- [x] T015 Add a visual design reference page for AI assisted UI work
+
+  Goal: Provide one shareable page with live component examples and concise design implementation rules.
+  Inputs: user request; current design kit, pages, routes, and design system documentation.
+  Allowed scope: new AI design reference route, shared footer link, generated-output checks, task status, and handoff.
+  Requirements: The page MUST show real component patterns, theme and palette guidance, typography, responsive and accessibility constraints, and repository boundaries. Palette previews MUST be interactive.
+  Acceptance checks: Run `npm run verify`; check the generated page and base-path links.
+  Non-goals: No recipe data or schema changes, dependencies, deployment, or push.
+  Dependencies: T014.
+
+## Phase 13: Recipe step typography
+
+- [x] T016 Match recipe steps to design reference section headings
+
+  Goal: Replace circular step numbers with section-style numbers on recipe pages and the AI design reference.
+  Inputs: user request; constitution; current recipe page, global styles, and AI design reference.
+  Allowed scope: recipe presentation, AI design reference example, task status, and handoff.
+  Requirements: Steps MUST use the reference section heading font and size. Step numbers MUST use the `01 ·` format. Recipe data and IDs MUST remain unchanged.
+  Acceptance checks: Run `npm run verify`; inspect generated recipe and design reference output.
+  Non-goals: No recipe contract, behavior, token, font asset, or palette changes.
+  Dependencies: T015.
+
+## Phase 14: Step column refinement
+
+- [x] T017 Separate recipe step numbers from body text
+
+  Goal: Keep section-style step numbers in their own column and restore the previous step body typography.
+  Inputs: user screenshot and correction; constitution; current recipe page, styles, and AI design reference.
+  Allowed scope: recipe presentation, AI design reference example, task status, and handoff.
+  Requirements: Numbers MUST use the `01 ·` heading style. Step text MUST use the previous 20px sans-serif style and stay in a separate column. Recipe content and IDs MUST remain unchanged.
+  Acceptance checks: Run `npm run verify`; inspect generated recipe and design reference output.
+  Non-goals: No recipe contract, behavior, tokens, font assets, or palette changes.
+  Dependencies: T016.
+
+## Phase 15: Step number cleanup
+
+- [x] T018 Remove separators from recipe step numbers
+
+  Goal: Remove decorative dots from the separate recipe step number column.
+  Inputs: user screenshot and correction; T017 styles and AI design reference.
+  Allowed scope: recipe presentation, AI design reference, task status, and handoff.
+  Requirements: Step numbers MUST remain two-digit and separate from body text. The separator dot MUST be removed.
+  Acceptance checks: Run `npm run verify`; inspect generated recipe and design reference output.
+  Non-goals: No recipe data, layout, behavior, token, font, or palette changes.
+  Dependencies: T017.

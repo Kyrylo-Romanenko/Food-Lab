@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import Base from "../../layouts/Base.astro";
 import catalog from "../../content/ingredients.json";
+import IngredientCalculator from "../../components/IngredientCalculator";
 export async function getStaticPaths() {
   return (await getCollection("recipes")).map((entry) => ({
     params: { slug: entry.data.slug },
@@ -57,7 +58,19 @@ const difficulty = { easy: "Легко", medium: "Помірно", hard: "Скл
     </div>
     <section aria-labelledby="ingredients">
       <h2 id="ingredients">Інгредієнти</h2>
-      <ul class="ingredients">
+      <IngredientCalculator
+        client:only="preact"
+        slug={entry.data.slug}
+        recipeName={recipe.title}
+        servings={recipe.servings}
+        fallbackId="static-ingredients"
+        ingredients={recipe.ingredients.map((item) => ({
+          id: item.ingredientId,
+          name: names.get(item.ingredientId) ?? item.ingredientId,
+          amount: item.amount,
+        }))}
+      />
+      <ul class="ingredients static-ingredients" id="static-ingredients">
         {recipe.ingredients.map((item, index) => (
           <li>
             <label class="ingredient-row">
@@ -82,7 +95,9 @@ const difficulty = { easy: "Легко", medium: "Помірно", hard: "Скл
       <h2 id="steps">Приготування</h2>
       <ol class="steps">
         {recipe.steps.map((step) => (
-          <li id={step.id}>{step.text}</li>
+          <li id={step.id}>
+            <span>{step.text}</span>
+          </li>
         ))}
       </ol>
     </section>

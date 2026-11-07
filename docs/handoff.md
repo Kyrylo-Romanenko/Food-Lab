@@ -1,15 +1,87 @@
 # Foundation handoff
 
+## Current feature: ingredient calculator
+
+Feature artifacts: `specs/002-ingredient-calculator/`. Tasks T001-T010 are complete.
+The recipe schema, recipe data, routes, and AI authoring contract remain unchanged. The recipe page
+now has a portion stepper, labeled calculator mode and reset controls, ingredient amount inputs,
+aligned quantity columns, anchor feedback, status, validation, and per-recipe local storage. The
+toolbar has no instructional hint row. Controls use inline SVG icons, visible Ukrainian labels,
+and accessible names. Static pages keep the original ingredient list; calculator controls mount
+only in the client-side island.
+
+`npm run verify` passed: zero Astro diagnostics, lint and format checks, 60 tests, static build, and
+generated-output checks. A separate build with `BASE_PATH=/Food-Lab/` and output check passed.
+The browser preview confirmed the portions stepper/status/reset/mode controls share one toolbar row
+at the available desktop width, amount fields align, and the hint row is absent. It also confirmed
+the buckwheat examples: carrot 60 gives 80 g grain, 175 ml water, and 1 portion; water 700 then
+gives 320 g grain, 240 g carrot, and 4 portions. Reload restored the saved carrot calculation;
+reset restored original amounts and removed that calculation. The browser was left with original
+values and calculator mode closed.
+
+The browser was checked in its available default viewport and dark navy theme. Separate 360px,
+768px, and 1280px checks were not run. Light theme, green palette, hover/focus/active states,
+keyboard Enter, virtual keyboard visibility, storage-blocked behavior, invalid browser inputs, and
+recipe-to-recipe storage isolation were not exercised in the browser. Pure tests cover accepted
+decimal and fraction input, invalid values, factor limits, number formatting, portions plural forms,
+and saved-state validation. Token contrast checks cover all four theme/palette pairs; no token
+changes were required. The AI authoring guide did not change because the authored recipe contract
+did not change.
+
+T008 follow-up from the 360px review: ingredient names now use word wrapping with a separate
+amount row under the name. The amount editor reserves its apply-button column, and the previous
+amount and validation message align under that row. The status wraps instead of truncating. Mode
+and reset controls have visible Ukrainian labels. Step markers use a max-content nowrap column.
+`npm run verify` passed again with 60 tests and zero Astro diagnostics. The available browser view
+confirmed visible labels and unchanged wide-screen alignment, but it could not be resized to an
+exact 360px viewport after the CSS change. That narrow visual check remains unverified.
+
+T009 fixes amount drift across rows and states. The anchor badge now sits beside the ingredient
+name and does not participate in amount-column sizing. Static quantity/unit display and calculator
+inputs use the same fixed columns, including a reserved apply-button slot. The browser preview
+confirmed that anchor and non-anchor rows share the same amount/unit positions, and changing a draft
+shows the apply button without moving the field or unit. The test state was reset afterward.
+`npm run verify` passed again with 60 tests and zero Astro diagnostics. Exact 360px visual testing
+remains unverified.
+
+T010 left-aligns static unit labels in their fixed grid cell and shares the edit view's muted color
+and font. The browser preview confirmed matching unit starts and colors for `г`, `мл`, and `ст. л.`
+in both modes; font equality is provided by the shared `.amount-unit` rule. Exact 360px visual
+testing remains unverified. `npm run verify` passed with zero Astro diagnostics, clean lint and
+formatting, 60 passing tests, a static build, and generated-output checks after the font update.
+
 ## Current feature
 
 specs/001-project-foundation/spec.md. Foundation only. Personal Cookbook remains provisional.
 
 ## Task status
 
-Completed: T001-T014. Pending foundation task IDs: None.
+Completed: T001-T018. Pending foundation task IDs: None.
 The authoritative task contracts are in specs/001-project-foundation/tasks.md.
 
 ## Verification
+
+T018 removes separator dots from the two-digit recipe step numbers. The change applies to the
+recipe pages and the AI design reference example.
+
+T017 places section-style step numbers in a fixed column and restores 20px sans-serif step
+text in a separate column. The AI design reference example uses the same structure. Recipe
+content and step IDs are unchanged.
+`npm run verify` passed Astro, lint, and formatting checks but stopped at one existing
+calculator test: `factorFromAmount(160, 1)` returned `null` while the test expects `0.1`.
+This calculator failure is outside T017. The build and output checks did not run in that attempt.
+`npm run build` passed separately and generated both recipe routes and the design reference.
+
+T016 replaces circular recipe step numbers with `01 ·` section-style numbers. Recipe steps and
+the AI design reference example use the same 24px monospace heading style. Recipe content, step
+IDs, fonts, tokens, and palettes are unchanged.
+`npm run verify` passed: zero Astro diagnostics, lint, formatting, 56 tests, static build, and
+output checks. The generated recipe and design reference pages contain the updated step styles.
+Browser visual inspection was not run for this typography change.
+
+T015 adds `/ai/design-reference/` with visual examples and an interactive navy/green sample
+palette switch. The footer links to it. Its guidance covers fonts, tokens, themes, accessibility,
+responsive layouts, content integrity, base path, and verification workflow.
 
 T014: Theme button displays sun, moon, and half-moon SVGs for light, dark, and automatic modes.
 Its Ukrainian label and tooltip name the active mode. Missing hero images use a 136px strip;
@@ -92,16 +164,12 @@ This bootstrap build records 6c08f3976f020ef2a151453b1073f4a7ef5b982a-dirty.
 That commit predates the uncommitted foundation; the pack does not claim exact reproducibility.
 Public recipe discovery validates every Markdown file under src/content/recipes/ before collection storage.
 
-## Exact next specification
+## Next specification
 
-After reviewing this foundation, use $speckit-specify for a bounded portion-scaling feature.
-Inputs: .specify/memory/constitution.md, AGENTS.md, specs/001-project-foundation/spec.md,
-specs/001-project-foundation/data-model.md, src/schemas/recipe.ts,
-src/pages/recipes/[slug].astro, tests/content.test.ts, docs/ai/recipe-authoring.md.
-Define pure scaling rules and rounding before adding a meaningful Preact island.
-Do not add storage or unit conversion to that first scaling feature.
-Cooking mode and session restoration should follow as separate bounded specifications.
-PWA validation remains a required follow-up. Check compatibility before selecting a plugin.
+No next product feature is approved. The ingredient calculator is specified in
+`specs/002-ingredient-calculator/`; it includes portion scaling and per-recipe local restoration.
+Write a separate Spec Kit specification for any new product scope. PWA validation remains a
+follow-up. Check compatibility before selecting a plugin.
 
 ## Local operation
 

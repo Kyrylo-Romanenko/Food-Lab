@@ -20,6 +20,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     <title>{title} · Personal Cookbook</title>
     <script is:inline>
       try {
+        if (localStorage.getItem("cookbook-palette") === "green") {
+          document.documentElement.dataset.palette = "green";
+        }
         const saved = localStorage.getItem("cookbook-theme");
         if (saved === "auto") {
           document.documentElement.removeAttribute("data-theme");
@@ -51,7 +54,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
           >
             Рецепти
           </a>
+          <a
+            href={`${base}/shopping/`}
+            aria-current={
+              Astro.url.pathname === `${base}/shopping/` ? "page" : undefined
+            }
+          >
+            Список покупок
+          </a>
         </nav>
+        <button class="palette-toggle" type="button" hidden>
+          Оливкова
+        </button>
         <button
           class="theme-toggle"
           type="button"
@@ -83,8 +97,30 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       <a href={`${base}/ai/recipe-authoring/`}>
         Інструкція для ШІ <span lang="en">(English)</span>
       </a>
+      <a href={`${base}/ai/design-reference/`}>Дизайн-референс для AI</a>
     </footer>
     <script is:inline>
+      const paletteToggle = document.querySelector(".palette-toggle");
+      const updatePaletteLabel = () => {
+        const olive = document.documentElement.dataset.palette === "green";
+        const label = `Палітра: ${olive ? "оливкова" : "navy"}`;
+        paletteToggle.textContent = olive ? "Оливкова" : "Navy";
+        paletteToggle.setAttribute("aria-label", label);
+        paletteToggle.setAttribute("title", label);
+      };
+      paletteToggle.hidden = false;
+      updatePaletteLabel();
+      paletteToggle.addEventListener("click", () => {
+        const olive = document.documentElement.dataset.palette !== "green";
+        if (olive) document.documentElement.dataset.palette = "green";
+        else document.documentElement.removeAttribute("data-palette");
+        try {
+          localStorage.setItem("cookbook-palette", olive ? "green" : "navy");
+        } catch {
+          // The selected palette still works for this page.
+        }
+        updatePaletteLabel();
+      });
       const toggle = document.querySelector(".theme-toggle");
       const currentTheme = () =>
         document.documentElement.dataset.theme || "auto";
