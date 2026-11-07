@@ -6,10 +6,25 @@ specs/001-project-foundation/spec.md. Foundation only. Personal Cookbook remains
 
 ## Task status
 
-Completed: T001-T013. Pending foundation task IDs: None.
+Completed: T001-T014. Pending foundation task IDs: None.
 The authoritative task contracts are in specs/001-project-foundation/tasks.md.
 
 ## Verification
+
+T014: Theme button displays sun, moon, and half-moon SVGs for light, dark, and automatic modes.
+Its Ukrainian label and tooltip name the active mode. Missing hero images use a 136px strip;
+placeholder captions are visually hidden, and the emoji has no opacity treatment. Prep and cook
+values use the same plain monospace style. The verification badge sits below the recipe title.
+Header, main, and footer share the 960px container and inner padding. The recipe reading column
+keeps the shared left edge. The footer divider is inset to the content width and its link is 13px
+and muted. Theme tokens, fonts, and palette values were not changed.
+`npm run verify` passed: zero Astro diagnostics, lint, formatting, 30 tests, static build, and
+output checks. The `/Food-Lab/` build and output check passed. An Edge screenshot shows the recipe
+page with the compact placeholder, aligned reading edge, and consistent metadata at 1280px.
+The Edge window ignored requested dimensions for the catalog screenshots, so 360px and 768px
+catalog layouts were not confirmed. Theme/palette combinations and hover, active, and focus states
+were reviewed in CSS but not exercised in a browser. Browser automation was unavailable.
+No commit, push, or deployment occurred.
 
 T013 design kit: The provided local Inter and JetBrains Mono subsets, font licenses, and
 navy/green tokens are in `public/design-kit/`. Dark navy is rendered by default. The header

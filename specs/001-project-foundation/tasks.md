@@ -159,3 +159,15 @@ US3 is tested by verify and handoff review. Do not commit automatically.
   Acceptance checks: Run `npm run verify`; check the `/Food-Lab/` build and local fonts; compute text and control contrast for both palettes and themes; inspect browser layout when available.
   Non-goals: No recipe contract change, invented images or verification, timer behavior, new dependencies, deploy, push, or automatic commit.
   Dependencies: T012.
+
+## Phase 11: Visual QA corrections
+
+- [x] T014 Correct theme icons, recipe placeholders, metadata, and shared alignment
+
+  Goal: Fix the visual QA issues reported for theme controls, missing photos, recipe metadata, and page alignment.
+  Inputs: user QA checklist; constitution; T013 design system and current rendered components.
+  Allowed scope: shared layout, catalog and recipe presentation, global styles, task status, and handoff.
+  Requirements: Keep design tokens, fonts, palette values, recipe content, and routes unchanged. Theme icon and labels MUST reflect the active mode. Missing recipe photos MUST use compact strips. Content edges MUST align.
+  Acceptance checks: Run `npm run verify`; inspect requested widths, theme/palette combinations, and interaction states where browser tooling permits.
+  Non-goals: No recipe data changes, new behavior, assets, dependencies, deployment, or push.
+  Dependencies: T013.
