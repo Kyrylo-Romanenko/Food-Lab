@@ -6,10 +6,25 @@ specs/001-project-foundation/spec.md. Foundation only. Personal Cookbook remains
 
 ## Task status
 
-Completed: T001-T011. Pending foundation task IDs: None.
+Completed: T001-T012. Pending foundation task IDs: None.
 The authoritative task contracts are in specs/001-project-foundation/tasks.md.
 
 ## Verification
+
+T012 design system: `npm run verify` passed with zero Astro diagnostics, lint and format checks,
+30 tests, static build, and generated-output checks. A separate `/Food-Lab/` build and output check passed.
+HTTP preview returned 200 for the catalog, both recipe pages, and the AI guide under `/Food-Lab/`.
+The owned preview server was stopped. Browser automation timed out before opening the preview.
+Search, filters, theme switching and persistence, keyboard flow, console output, and 320px layout
+were reviewed in source but not verified in a browser. The generated-output check now asserts the
+search/filter controls, card links, ingredient checkboxes, placeholders, and theme control.
+The current content contract has no image field and only permits `unverified`. Neutral image
+placeholders are shown. The verified filter has a valid empty state. No recipe contract changed.
+The older foundation spec excluded search and storage from that foundation task. The later T012
+design request explicitly adds catalog search and one local theme preference without changing
+recipe storage or the content contract. No deployment or push occurred.
+
+Earlier foundation verification follows.
 
 Passed: npm ci, npm run verify (zero diagnostics, lint, format, 30 tests, build, output checks),
 repository-subpath build and output checks for /Food-Lab/, and four HTTP route checks.

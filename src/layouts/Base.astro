@@ -15,25 +15,81 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Особиста збірка рецептів" />
     <title>{title} · Personal Cookbook</title>
+    <script is:inline>
+      try {
+        const saved = localStorage.getItem("cookbook-theme");
+        if (saved === "light" || saved === "dark") {
+          document.documentElement.dataset.theme = saved;
+        }
+      } catch {
+        // System preference remains active when storage is unavailable.
+      }
+    </script>
   </head>
   <body>
     <a class="skip" href="#main">
       До вмісту
     </a>
-    <header>
-      <a href={`${base}/`} lang="en">
-        Personal Cookbook
-      </a>
-      <span>Особиста збірка рецептів</span>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href={`${base}/`} lang="en">
+          Personal Cookbook
+        </a>
+        <nav aria-label="Головна навігація">
+          <a
+            href={`${base}/`}
+            aria-current={
+              Astro.url.pathname === `${base}/` ? "page" : undefined
+            }
+          >
+            Рецепти
+          </a>
+        </nav>
+        <button
+          class="theme-toggle"
+          type="button"
+          aria-label="Увімкнути темну тему"
+          hidden
+        >
+          <span aria-hidden="true">◐</span>
+        </button>
+      </div>
     </header>
     <main id="main">
       <slot />
     </main>
-    <footer>
+    <footer class="site-footer">
       <a href={`${base}/ai/recipe-authoring/`}>
         Інструкція для ШІ <span lang="en">(English)</span>
       </a>
-      <p>Personal Cookbook — тимчасова назва.</p>
     </footer>
+    <script is:inline>
+      const toggle = document.querySelector(".theme-toggle");
+      const system = matchMedia("(prefers-color-scheme: dark)");
+      const currentTheme = () =>
+        document.documentElement.dataset.theme ||
+        (system.matches ? "dark" : "light");
+      const updateLabel = () => {
+        const dark = currentTheme() === "dark";
+        toggle.setAttribute(
+          "aria-label",
+          dark ? "Увімкнути світлу тему" : "Увімкнути темну тему",
+        );
+        toggle.setAttribute("aria-pressed", String(dark));
+      };
+      toggle.hidden = false;
+      updateLabel();
+      toggle.addEventListener("click", () => {
+        const next = currentTheme() === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = next;
+        try {
+          localStorage.setItem("cookbook-theme", next);
+        } catch {
+          // Theme still works for this page when storage is unavailable.
+        }
+        updateLabel();
+      });
+      system.addEventListener("change", updateLabel);
+    </script>
   </body>
 </html>

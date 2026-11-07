@@ -31,7 +31,7 @@ continuing this feature. Spec Kit keeps its feature.json pointer local and ignor
 
 ## Deployment inputs
 
-No deployment is configured. A future deployment needs a static host and its base path.
+The GitHub Pages workflow builds the site for the `/Food-Lab/` base path.
 Build with npm run build -- --base /Food-Lab/ for that subpath, or set BASE_PATH before building.
 Use node scripts/check-output.mjs /Food-Lab/ to check that output.
 Use trailing-slash URLs. Configure the host to serve dist/ and its 404.html.
@@ -39,7 +39,8 @@ No production domain is assumed. Restart dev after editing guide source or catal
 
 ## Boundaries and licenses
 
-No storage, scaling, search, cooking mode, offline support, AI API, authentication, or sync is implemented.
+The theme control stores a public display preference in localStorage. Catalog search and status filters run on the current page.
+No recipe storage, scaling, cooking mode, offline support, AI API, authentication, or sync is implemented.
 Do not commit private data, backups, or credentials.
 Code uses [MIT](LICENSE). Original recipes, documentation, and project media use
 [CC BY 4.0](LICENSE-CONTENT.md). See [NOTICE.md](NOTICE.md) for scope and reuse rights.

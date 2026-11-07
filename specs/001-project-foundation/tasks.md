@@ -135,3 +135,15 @@ US3 is tested by verify and handoff review. Do not commit automatically.
   Acceptance checks: Production validation discovers the recipe and all ingredient references. Build output contains its catalog route and complete detail page. `npm run verify` passes.
   Non-goals: No recipe contract changes, source attribution, rich markup, media, portion scaling, or other product features.
   Dependencies: T010.
+
+## Phase 9: Design system
+
+- [x] T012 Implement Personal Cookbook Design System v1.0
+
+  Goal: Apply the approved modern editorial visual direction to the existing static site.
+  Inputs: user design-system request; constitution; foundation spec and plan; current pages, styles, schema, and deployment workflow.
+  Allowed scope: layout and page presentation, global styles, generated-output checks, design-system documentation, task status, and handoff.
+  Requirements: Semantic light and dark tokens; automatic and persistent manual themes; accessible catalog search and status filters; responsive cards and detail layout; recipe content integrity; static base-path compatibility.
+  Acceptance checks: Run `npm run verify`; inspect both generated recipes, navigation, controls, placeholders, and subpath output; check browser behavior when available.
+  Non-goals: No recipe contract change, invented verification state, invented images, dependency, deploy, or push.
+  Dependencies: T011.

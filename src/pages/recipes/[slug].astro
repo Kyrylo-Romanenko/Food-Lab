@@ -24,55 +24,72 @@ const difficulty = { easy: "Легко", medium: "Помірно", hard: "Скл
 ---
 
 <Base title={recipe.title}>
-  <p class="eyebrow">Рецепт · {difficulty[recipe.difficulty]}</p>
-  <h1>{recipe.title}</h1>
-  <p class="lead">{recipe.description}</p>
-  <p class="notice">
-    Ще не перевірено приготуванням. Порції та час — орієнтовні.
-  </p>
-  <dl class="facts">
-    <div>
-      <dt>Порції</dt>
-      <dd>{recipe.servings}</dd>
+  <article class="recipe-detail">
+    <p class="eyebrow">Рецепт · {difficulty[recipe.difficulty]}</p>
+    <h1>{recipe.title}</h1>
+    <p class="lead">{recipe.description}</p>
+    <dl class="recipe-meta">
+      <div>
+        <dt>Порції</dt>
+        <dd>{recipe.servings}</dd>
+      </div>
+      <div>
+        <dt>Підготовка</dt>
+        <dd>{recipe.time.prep} хв</dd>
+      </div>
+      <div>
+        <dt>Приготування</dt>
+        <dd>{recipe.time.cook} хв</dd>
+      </div>
+    </dl>
+    <p class="detail-status">
+      {recipe.status === "unverified" ? "Ще не перевірено" : "Перевірено"}
+    </p>
+    <div
+      class="image-placeholder hero-image"
+      role="img"
+      aria-label={`Фото страви «${recipe.title}» відсутнє`}
+    >
+      <span aria-hidden="true">Фото відсутнє</span>
     </div>
-    <div>
-      <dt>Підготовка</dt>
-      <dd>{recipe.time.prep} хв</dd>
-    </div>
-    <div>
-      <dt>Приготування</dt>
-      <dd>{recipe.time.cook} хв</dd>
-    </div>
-  </dl>
-  <section aria-labelledby="ingredients">
-    <h2 id="ingredients">Інгредієнти</h2>
-    <ul class="ingredients">
-      {recipe.ingredients.map((item) => (
-        <li>
-          <span>{names.get(item.ingredientId)}</span>
-          <strong>
-            {item.amount.kind === "to-taste"
-              ? "за смаком"
-              : `${item.amount.quantity.toLocaleString("uk-UA")} ${labels[item.amount.unit]}`}
-          </strong>
-        </li>
-      ))}
-    </ul>
-  </section>
-  <section aria-labelledby="steps">
-    <h2 id="steps">Приготування</h2>
-    <ol class="steps">
-      {recipe.steps.map((step) => (
-        <li id={step.id}>{step.text}</li>
-      ))}
-    </ol>
-  </section>
-  {entry.data.notes && (
-    <section aria-labelledby="notes">
-      <h2 id="notes">Примітки</h2>
-      {entry.data.notes.split(/\n\s*\n/).map((note) => (
-        <p>{note}</p>
-      ))}
+    <section aria-labelledby="ingredients">
+      <h2 id="ingredients">Інгредієнти</h2>
+      <ul class="ingredients">
+        {recipe.ingredients.map((item, index) => (
+          <li>
+            <label class="ingredient-row">
+              <input
+                type="checkbox"
+                aria-label={`${names.get(item.ingredientId)}, інгредієнт ${index + 1}`}
+              />
+              <span class="ingredient-name">
+                {names.get(item.ingredientId)}
+              </span>
+              <strong class="ingredient-amount">
+                {item.amount.kind === "to-taste"
+                  ? "за смаком"
+                  : `${item.amount.quantity.toLocaleString("uk-UA")} ${labels[item.amount.unit]}`}
+              </strong>
+            </label>
+          </li>
+        ))}
+      </ul>
     </section>
-  )}
+    <section aria-labelledby="steps">
+      <h2 id="steps">Приготування</h2>
+      <ol class="steps">
+        {recipe.steps.map((step) => (
+          <li id={step.id}>{step.text}</li>
+        ))}
+      </ol>
+    </section>
+    {entry.data.notes && (
+      <section aria-labelledby="notes">
+        <h2 id="notes">Примітки</h2>
+        {entry.data.notes.split(/\n\s*\n/).map((note) => (
+          <p>{note}</p>
+        ))}
+      </section>
+    )}
+  </article>
 </Base>
