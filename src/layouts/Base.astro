@@ -9,22 +9,29 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 ---
 
 <!doctype html>
-<html lang={lang}>
+<html lang={lang} data-theme="dark">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <meta name="description" content="Особиста збірка рецептів" />
     <title>{title} · Personal Cookbook</title>
     <script is:inline>
       try {
         const saved = localStorage.getItem("cookbook-theme");
-        if (saved === "light" || saved === "dark") {
+        if (saved === "auto") {
+          document.documentElement.removeAttribute("data-theme");
+        } else if (saved === "light" || saved === "dark") {
           document.documentElement.dataset.theme = saved;
         }
       } catch {
-        // System preference remains active when storage is unavailable.
+        // The server-rendered dark theme remains active.
       }
     </script>
+    <link rel="stylesheet" href={`${base}/design-kit/fonts.css`} />
+    <link rel="stylesheet" href={`${base}/design-kit/tokens.css`} />
   </head>
   <body>
     <a class="skip" href="#main">
@@ -48,10 +55,23 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         <button
           class="theme-toggle"
           type="button"
-          aria-label="Увімкнути темну тему"
+          aria-label="Тема: темна. Увімкнути світлу тему"
           hidden
         >
-          <span aria-hidden="true">◐</span>
+          <svg
+            aria-hidden="true"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 3a9 9 0 0 0 0 18"></path>
+          </svg>
         </button>
       </div>
     </header>
@@ -65,31 +85,36 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     </footer>
     <script is:inline>
       const toggle = document.querySelector(".theme-toggle");
-      const system = matchMedia("(prefers-color-scheme: dark)");
       const currentTheme = () =>
-        document.documentElement.dataset.theme ||
-        (system.matches ? "dark" : "light");
+        document.documentElement.dataset.theme || "auto";
       const updateLabel = () => {
-        const dark = currentTheme() === "dark";
-        toggle.setAttribute(
-          "aria-label",
-          dark ? "Увімкнути світлу тему" : "Увімкнути темну тему",
-        );
-        toggle.setAttribute("aria-pressed", String(dark));
+        const labels = {
+          dark: "Тема: темна. Увімкнути світлу тему",
+          light: "Тема: світла. Увімкнути автоматичну тему",
+          auto: "Тема: автоматична. Увімкнути темну тему",
+        };
+        const label = labels[currentTheme()];
+        toggle.setAttribute("aria-label", label);
+        toggle.setAttribute("title", label);
       };
       toggle.hidden = false;
       updateLabel();
       toggle.addEventListener("click", () => {
-        const next = currentTheme() === "dark" ? "light" : "dark";
-        document.documentElement.dataset.theme = next;
+        const next = { dark: "light", light: "auto", auto: "dark" }[
+          currentTheme()
+        ];
+        if (next === "auto") {
+          document.documentElement.removeAttribute("data-theme");
+        } else {
+          document.documentElement.dataset.theme = next;
+        }
         try {
           localStorage.setItem("cookbook-theme", next);
         } catch {
-          // Theme still works for this page when storage is unavailable.
+          // The selected theme still works for this page.
         }
         updateLabel();
       });
-      system.addEventListener("change", updateLabel);
     </script>
   </body>
 </html>

@@ -39,7 +39,9 @@ const difficulty = { easy: "Легко", medium: "Помірно", hard: "Скл
       </div>
       <div>
         <dt>Приготування</dt>
-        <dd>{recipe.time.cook} хв</dd>
+        <dd>
+          <span class="timer-chip">{recipe.time.cook} хв</span>
+        </dd>
       </div>
     </dl>
     <p class="detail-status">
@@ -50,6 +52,9 @@ const difficulty = { easy: "Легко", medium: "Помірно", hard: "Скл
       role="img"
       aria-label={`Фото страви «${recipe.title}» відсутнє`}
     >
+      <span class="placeholder-icon" aria-hidden="true">
+        🍽️
+      </span>
       <span aria-hidden="true">Фото відсутнє</span>
     </div>
     <section aria-labelledby="ingredients">

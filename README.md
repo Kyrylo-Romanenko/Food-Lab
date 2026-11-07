@@ -20,6 +20,7 @@ Use npm run format to format source. verify checks formatting without changing s
 - [Constitution](.specify/memory/constitution.md)
 - [Specification](specs/001-project-foundation/spec.md), [plan](specs/001-project-foundation/plan.md), [tasks](specs/001-project-foundation/tasks.md)
 - [Agent instructions](AGENTS.md) and [handoff](docs/handoff.md)
+- [Visual rules](DESIGN.md) and [design system](docs/design-system.md)
 - [AI authoring source](docs/ai/recipe-authoring.md); copy the complete rendered pack from /ai/recipe-authoring/.
 - [Compatibility evidence](specs/001-project-foundation/research.md)
 

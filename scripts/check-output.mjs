@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 const base = (process.argv[2] || process.env.BASE_PATH || "/").replace(
   /\/$/,
   "",
@@ -74,12 +74,24 @@ for (const html of [catalog, ...recipes, guide, missing]) {
   assert.ok(!/<astro-island\b/.test(html), "No hydrated island");
   assert.ok(html.includes('class="theme-toggle"'), "Theme control");
   assert.ok(html.includes("cookbook-theme"), "Persistent theme script");
+  assert.ok(html.includes(`${base}/design-kit/fonts.css`), "Local font CSS");
+  assert.ok(html.includes(`${base}/design-kit/tokens.css`), "Design tokens");
   assert.ok(html.includes(`${base}/`));
   for (const [, url] of html.matchAll(/(?:href|src)="(\/[^" ]*)"/g))
     assert.ok(url.startsWith(`${base}/`), `Subpath missing: ${url}`);
   assert.ok(
     !/(?:src|href)="https?:[^" ]+\.(?:png|jpg|webp|woff2?)/.test(html),
     "No external assets",
+  );
+}
+const fontCss = read("design-kit/fonts.css");
+assert.ok(read("design-kit/tokens.css").includes("--mono"));
+const fonts = [...fontCss.matchAll(/url\(["']\.\/fonts\/([^"']+)["']\)/g)];
+assert.equal(fonts.length, 10, "All local font subsets are referenced");
+for (const [, file] of fonts) {
+  assert.ok(
+    existsSync(`dist/design-kit/fonts/${file}`),
+    `Missing font: ${file}`,
   );
 }
 console.log(

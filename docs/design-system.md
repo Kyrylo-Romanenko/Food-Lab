@@ -1,31 +1,59 @@
-# Personal Cookbook Design System v1.0
+# Food Lab design system
 
-## Principles
+The design kit in `public/design-kit/` supplies the colors, self-hosted fonts, and font licenses. The dark navy palette is the default. The user can cycle through dark, light, and automatic themes in the header. Automatic mode follows `prefers-color-scheme`. The selection persists in `localStorage` when storage is available. The server renders dark when JavaScript is disabled.
 
-Use modern editorial minimalism. Keep white or dark neutral surfaces, strong type, clear food content, and restrained green accents. Keep decoration and motion minimal. The display label remains provisional.
+## Design rules
 
-## Tokens and themes
+Use calm surfaces, strong monospace headings, readable body text, and small accents. Use natural recipe content. Keep controls large enough for kitchen use. Use one border and surface contrast instead of heavy shadows. The recipe schema has no image field; placeholders use one emoji each. Both current recipes remain unverified.
 
-`src/styles/global.css` defines semantic CSS variables. Light colors are background `#FFFFFF`, surface `#F7F7F5`, hover `#F0F1EE`, text `#202124`, secondary `#666B68`, muted `#858A86`, border `#E5E7E4`, accent `#355C48`, accent hover `#294936`, and accent soft `#EAF1EC`.
+## Color tokens
 
-Dark colors are background `#151A18`, surface `#202723`, text `#F1F3EF`, secondary `#B0BBB3`, border `#36423A`, accent `#A2CBB0`, and accent soft `#263A2E`. Dark hover and muted tokens support controls and labels.
+`public/design-kit/tokens.css` is the color source. Set `data-palette="green"` on `<html>` to use the green palette. Do not copy color literals into component CSS.
 
-The system color scheme applies until a person selects a theme. The header control saves `light` or `dark` in `localStorage`. An early head script restores that value before body rendering. If storage is unavailable, the control still changes the current page. The manual preference has no reset control in v1.0; clearing `cookbook-theme` restores automatic selection.
+| Token              | Role                               | Navy light | Navy dark | Green light | Green dark |
+| ------------------ | ---------------------------------- | ---------- | --------- | ----------- | ---------- |
+| `--bg`             | Page                               | `#F6F7F9`  | `#0A1220` | `#F7F8F5`   | `#0B1510`  |
+| `--surface`        | Cards and controls                 | `#FFFFFF`  | `#111C2E` | `#FFFFFF`   | `#122019`  |
+| `--border`         | Decorative dividers                | `#E0E5EC`  | `#223049` | `#E0E7E1`   | `#223A2D`  |
+| `--control-border` | Control outlines                   | `#828E9E`  | `#62728A` | `#859286`   | `#607C6D`  |
+| `--text`           | Main text                          | `#0F1B2D`  | `#E8EDF5` | `#14231B`   | `#E6EFE9`  |
+| `--muted`          | Secondary text                     | `#5A6678`  | `#9AA7BA` | `#5B6B61`   | `#9BB0A3`  |
+| `--primary`        | Brand actions and badges           | `#0B2D5E`  | `#7DABF2` | `#14532D`   | `#63C48C`  |
+| `--on-primary`     | Text on brand fill                 | `#FFFFFF`  | `#0A1220` | `#FFFFFF`   | `#0B1510`  |
+| `--primary-soft`   | Soft brand fill                    | `#E6EDF8`  | `#172A47` | `#E4F1E8`   | `#173324`  |
+| `--accent`         | Accent fill and icon               | `#D98E04`  | `#F2B84B` | `#B4232C`   | `#F0707A`  |
+| `--accent-text`    | Accent text and focus              | `#8A5A00`  | `#F2B84B` | `#B4232C`   | `#F0707A`  |
+| `--ok`             | Verified status if supported later | `#1F7A4D`  | `#58C08A` | `#14532D`   | `#63C48C`  |
 
-## Typography and spacing
+`--surface-hover` uses the kit's soft brand fill. `--control-border` is the only new color family. It gives input and button outlines at least 3:1 contrast against each surface. Decorative `--border` remains subtle and does not identify an interactive control.
 
-Use `Inter, system-ui, sans-serif` without external font requests. Body text is 16px with 1.6 line height. Page titles use 28px on mobile and 36px on larger screens. Section titles use 24px. Card titles use 18px on mobile and 20px on larger screens. Descriptions use 14px, metadata 13px, and status labels 12px.
+## Typography and layout
 
-Use a spacing scale of 4, 8, 12, 16, 24, 32, 48, and 64px. The main container is at most 1120px. Recipe reading width is at most 720px.
+`public/design-kit/fonts.css` loads local Inter 400/500/600 and JetBrains Mono 500/700 in Latin and Cyrillic. Body text uses `--sans` at 16px/1.6. Headings use `--mono`: H1 28–40px, H2 24px, H3 and card titles 18px. Step text uses 20px. Description text uses 14px. Metadata uses `--mono` at 13px and badges at 12px. Numbers, time, and quantities use `--mono`.
 
-## Components and layout
+Spacing tokens are 4, 8, 12, 16, 24, 32, and 48px. Radius tokens are 8, 12, and 16px. Main width is 960px; recipe reading width is 720px. Cards use one column below 600px, two columns from 600px, and three from 900px. Card images are 4:3 and the recipe hero is 16:9. Safe area padding protects the footer. The page must fit 320px.
 
-The header contains the provisional brand, the recipe link, and a theme control. The authoring guide stays in the footer. Cards contain a 4:3 image area, title, description, total time, servings, and status. Each full card is a link. The detail page contains a 16:9 image area, metadata, ingredient checkboxes, steps, and existing notes.
+## Components and access
 
-The grid uses one column below 768px, two columns from 768px, and three columns from 1200px. The interface must fit 320px without page-level horizontal scrolling. Search uses recipe titles and ingredient names from the existing public catalog. Search and status filters combine. They appear only when JavaScript runs; static reading remains available.
+The header has a brand link, recipe link, and SVG theme control. Catalog cards are whole links. Search checks recipe titles and ingredient names from validated content. Search and status filters combine. Controls appear only when JavaScript runs; recipes remain readable without it. The detail page uses checkbox rows, numbered steps, a static time chip, and the original notes. The time chip does not start a timer.
 
-The current authoring contract has no image field. Both public recipes use neutral placeholders. The current schema accepts only `unverified`. The verified filter therefore returns the empty state until a separate contract change adds a verified value. Do not infer verification from notes or appearance.
+Give buttons and inputs at least 44px of touch height. Keep focus visible with a 2px `--accent-text` outline and 2px offset. Respect reduced motion. Use a single emoji in each missing-image placeholder. Do not add emoji to headings, navigation, or primary controls. Use inline SVG for UI icons. Do not invent recipe images, verification states, or cooking behavior.
 
-## Accessibility and implementation
+## Contrast review
 
-Use semantic landmarks, visible focus, labeled controls, 44px or larger controls where practical, and readable line lengths. The ingredient row has a touch-sized checkbox target. Respect `prefers-reduced-motion`. Keep transitions at 150ms or less. Use token colors in components. Keep scripts local to the page or shared layout. Preserve static Astro output, existing routes, base paths, and the strict content schema. Do not add remote assets or dependencies for this design system.
+The values below were computed from the token values with the WCAG contrast formula. They cover text and control pairs used by the site. This is a numeric token check, not a browser accessibility audit.
+
+| Pair                      | Navy light | Navy dark | Green light | Green dark |
+| ------------------------- | ---------: | --------: | ----------: | ---------: |
+| Text on page              |      16.12 |     15.95 |       15.32 |      15.84 |
+| Text on surface           |      17.28 |     14.53 |       16.33 |      14.35 |
+| Muted on page             |       5.43 |      7.69 |        5.30 |       8.09 |
+| Muted on surface          |       5.82 |      7.00 |        5.64 |       7.33 |
+| Primary on page           |      12.63 |      8.02 |        8.55 |       8.69 |
+| Primary on soft fill      |      11.50 |      6.16 |        7.83 |       6.39 |
+| On-primary on primary     |      13.54 |      8.02 |        9.11 |       8.69 |
+| Accent text on surface    |       5.93 |      9.54 |        6.53 |       5.86 |
+| OK on surface             |       5.32 |      7.58 |        9.11 |       7.87 |
+| Control border on surface |       3.33 |      3.49 |        3.25 |       3.69 |
+
+All listed text pairs exceed 4.5:1. Control borders exceed 3:1. Check both themes and both palettes after a token change.

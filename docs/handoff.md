@@ -6,10 +6,25 @@ specs/001-project-foundation/spec.md. Foundation only. Personal Cookbook remains
 
 ## Task status
 
-Completed: T001-T012. Pending foundation task IDs: None.
+Completed: T001-T013. Pending foundation task IDs: None.
 The authoritative task contracts are in specs/001-project-foundation/tasks.md.
 
 ## Verification
+
+T013 design kit: The provided local Inter and JetBrains Mono subsets, font licenses, and
+navy/green tokens are in `public/design-kit/`. Dark navy is rendered by default. The header
+cycles dark, light, and automatic themes. A saved preference is restored before styles paint.
+The new `--control-border` token raises control outline contrast to at least 3:1 in all four
+theme/palette combinations. `docs/design-system.md` records numeric text and control contrast.
+The recipe data, schema, routes, search logic, and authoring guide contract did not change.
+`npm run verify` passed with zero Astro diagnostics, lint, format, 30 tests, build, and output checks.
+The `/Food-Lab/` build and output checks passed. HTTP preview returned 200 for the catalog,
+both recipes, the design CSS, and sampled Inter and JetBrains Mono files. Headless Edge screenshots
+showed the dark catalog at 500px and 768px and the pasta page at 1280px. A 360px screenshot was
+cropped because this Edge invocation used a wider minimum layout viewport. Actual 320px/360px
+layout, light/green visual states, keyboard flow, theme persistence, and search/filter behavior
+were not verified in a browser. CUA browser initialization timed out; a CDP attempt was unavailable.
+The owned preview server was stopped. No commit, push, or deployment occurred.
 
 T012 design system: `npm run verify` passed with zero Astro diagnostics, lint and format checks,
 30 tests, static build, and generated-output checks. A separate `/Food-Lab/` build and output check passed.

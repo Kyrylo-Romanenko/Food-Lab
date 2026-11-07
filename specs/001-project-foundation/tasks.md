@@ -147,3 +147,15 @@ US3 is tested by verify and handoff review. Do not commit automatically.
   Acceptance checks: Run `npm run verify`; inspect both generated recipes, navigation, controls, placeholders, and subpath output; check browser behavior when available.
   Non-goals: No recipe contract change, invented verification state, invented images, dependency, deploy, or push.
   Dependencies: T011.
+
+## Phase 10: Reference kit refinement
+
+- [x] T013 Apply the supplied Food Lab design kit with dark navy default
+
+  Goal: Use the supplied navy and green palettes and self-hosted fonts for the existing pages.
+  Inputs: user request; `food-lab-design-kit.zip`; style preview HTML; constitution; T012 pages, styles, and design documentation.
+  Allowed scope: static design assets, layout and page presentation, global CSS, output checks, design documentation, task status, and handoff.
+  Requirements: Dark navy MUST be the default. Theme control MUST support dark, light, and automatic modes. Palette MUST be switchable through `data-palette`. Preserve existing recipe data, search behavior, routes, and static base path.
+  Acceptance checks: Run `npm run verify`; check the `/Food-Lab/` build and local fonts; compute text and control contrast for both palettes and themes; inspect browser layout when available.
+  Non-goals: No recipe contract change, invented images or verification, timer behavior, new dependencies, deploy, push, or automatic commit.
+  Dependencies: T012.
