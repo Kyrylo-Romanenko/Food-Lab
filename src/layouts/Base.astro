@@ -24,9 +24,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
           document.documentElement.dataset.palette = "green";
         }
         const saved = localStorage.getItem("cookbook-theme");
-        if (saved === "auto") {
-          document.documentElement.removeAttribute("data-theme");
-        } else if (saved === "light" || saved === "dark") {
+        if (saved === "light" || saved === "dark") {
           document.documentElement.dataset.theme = saved;
         }
       } catch {
@@ -43,7 +41,21 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     <header class="site-header">
       <div class="header-inner">
         <a class="brand" href={`${base}/`} lang="en">
-          Personal Cookbook
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            width="26"
+            height="26"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z" />
+            <path d="M4 4.5v17M8 6h8m-8 4h8" />
+          </svg>
+          <span>Personal Cookbook</span>
         </a>
         <nav aria-label="Головна навігація">
           <a
@@ -52,19 +64,63 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
               Astro.url.pathname === `${base}/` ? "page" : undefined
             }
           >
-            Рецепти
+            <span>Рецепти</span>
           </a>
           <a
+            class="shopping-nav-link"
             href={`${base}/shopping/`}
+            aria-label="Список покупок"
+            title="Список покупок"
             aria-current={
               Astro.url.pathname === `${base}/shopping/` ? "page" : undefined
             }
           >
-            Список покупок
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 1.9-1.4L21 9H6" />
+              <circle cx="10" cy="20" r="1" />
+              <circle cx="18" cy="20" r="1" />
+            </svg>
+            <span class="shopping-count" aria-hidden="true" hidden></span>
+            <span class="visually-hidden">Список покупок</span>
+          </a>
+          <a
+            class="favorites-nav-link"
+            href={`${base}/favorites/`}
+            aria-label="Улюблене"
+            title="Улюблене"
+            aria-current={
+              Astro.url.pathname === `${base}/favorites/` ? "page" : undefined
+            }
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9z" />
+            </svg>
+            <span class="favorites-count" aria-hidden="true" hidden></span>
+            <span class="visually-hidden">Улюблене</span>
           </a>
         </nav>
         <button class="palette-toggle" type="button" hidden>
-          Оливкова
+          oliv
         </button>
         <button
           class="theme-toggle"
@@ -94,17 +150,53 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       <slot />
     </main>
     <footer class="site-footer">
-      <a href={`${base}/ai/recipe-authoring/`}>
-        Інструкція для ШІ <span lang="en">(English)</span>
+      <a
+        href={`${base}/ai/recipe-authoring/`}
+        aria-label="Інструкція для ШІ (English)"
+        title="Інструкція для ШІ (English)"
+      >
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z" />
+          <path d="M4 4.5v17M8 6h8m-8 4h8" />
+        </svg>
       </a>
-      <a href={`${base}/ai/design-reference/`}>Дизайн-референс для AI</a>
+      <a
+        href={`${base}/ai/design-reference/`}
+        aria-label="Дизайн-референс для AI"
+        title="Дизайн-референс для AI"
+      >
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m12 3 1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7z" />
+          <path d="m19 16 .8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z" />
+        </svg>
+      </a>
     </footer>
     <script is:inline>
       const paletteToggle = document.querySelector(".palette-toggle");
       const updatePaletteLabel = () => {
         const olive = document.documentElement.dataset.palette === "green";
         const label = `Палітра: ${olive ? "оливкова" : "navy"}`;
-        paletteToggle.textContent = olive ? "Оливкова" : "Navy";
+        paletteToggle.textContent = olive ? "oliv" : "Navy";
         paletteToggle.setAttribute("aria-label", label);
         paletteToggle.setAttribute("title", label);
       };
@@ -123,19 +215,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       });
       const toggle = document.querySelector(".theme-toggle");
       const currentTheme = () =>
-        document.documentElement.dataset.theme || "auto";
+        document.documentElement.dataset.theme || "dark";
       const icons = {
         dark: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"/></svg>',
         light:
           '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>',
-        auto: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18a9 9 0 0 1 0-18Z" fill="currentColor" stroke="none"/></svg>',
       };
       const updateLabel = () => {
         const mode = currentTheme();
         const labels = {
           dark: "Тема: темна",
           light: "Тема: світла",
-          auto: "Тема: авто",
         };
         const label = labels[mode];
         toggle.setAttribute("aria-label", label);
@@ -145,14 +235,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       toggle.hidden = false;
       updateLabel();
       toggle.addEventListener("click", () => {
-        const next = { dark: "light", light: "auto", auto: "dark" }[
-          currentTheme()
-        ];
-        if (next === "auto") {
-          document.documentElement.removeAttribute("data-theme");
-        } else {
-          document.documentElement.dataset.theme = next;
-        }
+        const next = currentTheme() === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = next;
         try {
           localStorage.setItem("cookbook-theme", next);
         } catch {
@@ -160,6 +244,78 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         }
         updateLabel();
       });
+    </script>
+    <script>
+      import { buildShoppingRows } from "../lib/shopping";
+      import {
+        LEGACY_SHOPPING_STORAGE_KEY,
+        readShoppingState,
+        SHOPPING_STORAGE_KEY,
+      } from "../lib/shopping-storage";
+      import { readFavorites, subscribeFavorites } from "../lib/favorites";
+
+      const shoppingLink =
+        document.querySelector<HTMLAnchorElement>(".shopping-nav-link");
+      const shoppingCount =
+        shoppingLink?.querySelector<HTMLElement>(".shopping-count");
+      const updateShoppingCount = () => {
+        if (!shoppingLink || !shoppingCount) return;
+        const count = buildShoppingRows(readShoppingState().state).length;
+        const remainder10 = count % 10;
+        const remainder100 = count % 100;
+        const word =
+          remainder10 === 1 && remainder100 !== 11
+            ? "рядок"
+            : remainder10 >= 2 &&
+                remainder10 <= 4 &&
+                (remainder100 < 12 || remainder100 > 14)
+              ? "рядки"
+              : "рядків";
+        const label =
+          count === 0 ? "Список покупок" : `Список покупок: ${count} ${word}`;
+        shoppingCount.textContent =
+          count > 99 ? "99+" : count > 0 ? String(count) : "";
+        shoppingCount.hidden = count === 0;
+        shoppingLink.setAttribute("aria-label", label);
+        shoppingLink.title = label;
+      };
+      updateShoppingCount();
+      window.addEventListener("foodlab:shopping-updated", updateShoppingCount);
+      window.addEventListener("storage", (event) => {
+        if (
+          event.key === SHOPPING_STORAGE_KEY ||
+          event.key === LEGACY_SHOPPING_STORAGE_KEY
+        )
+          updateShoppingCount();
+      });
+      const favoritesLink = document.querySelector<HTMLAnchorElement>(
+        ".favorites-nav-link",
+      );
+      const favoritesCount =
+        favoritesLink?.querySelector<HTMLElement>(".favorites-count");
+      const updateFavoritesCount = () => {
+        if (!favoritesLink || !favoritesCount) return;
+        const result = readFavorites();
+        const count = result.state.items.length;
+        favoritesCount.textContent = count > 99 ? "99+" : String(count);
+        favoritesCount.hidden = count === 0;
+        const remainder10 = count % 10;
+        const remainder100 = count % 100;
+        const noun =
+          remainder10 === 1 && remainder100 !== 11
+            ? "рецепт"
+            : remainder10 >= 2 &&
+                remainder10 <= 4 &&
+                (remainder100 < 12 || remainder100 > 14)
+              ? "рецепти"
+              : "рецептів";
+        favoritesLink.setAttribute(
+          "aria-label",
+          count === 0 ? "Улюблене" : `Улюблене: ${count} ${noun}`,
+        );
+      };
+      updateFavoritesCount();
+      subscribeFavorites(updateFavoritesCount);
     </script>
   </body>
 </html>

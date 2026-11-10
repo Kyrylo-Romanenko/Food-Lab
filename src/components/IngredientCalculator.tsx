@@ -1,4 +1,10 @@
-import { useLayoutEffect, useMemo, useRef, useState } from "preact/hooks";
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "preact/hooks";
 import {
   formatAmount,
   formatPortions,
@@ -12,6 +18,13 @@ import {
   type CalculatorState,
   type ScalableIngredient,
 } from "../lib/calculator";
+import {
+  createShoppingItemId,
+  readShoppingState,
+  writeSessionShoppingState,
+  writeShoppingState,
+} from "../lib/shopping-storage";
+import type { Amount, SelectedRecipe } from "../lib/shopping";
 
 interface MeasuredAmount {
   kind: "measured";
@@ -31,6 +44,7 @@ interface Ingredient {
 
 interface Props {
   slug: string;
+  recipeId: string;
   recipeName?: string;
   servings: number;
   ingredients: Ingredient[];
@@ -86,6 +100,7 @@ function ingredientText(ingredient: Ingredient, quantity: number): string {
 
 export default function IngredientCalculator({
   slug,
+  recipeId,
   recipeName = slug,
   servings,
   ingredients,
@@ -123,6 +138,10 @@ export default function IngredientCalculator({
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [announcement, setAnnouncement] = useState("");
+  const [sessionShopping, setSessionShopping] = useState<SelectedRecipe[]>([]);
+  const [addedIngredients, setAddedIngredients] = useState<Set<string>>(
+    () => new Set(),
+  );
   const amountInputs = useRef<Record<string, HTMLInputElement | null>>({});
   const factor = state.factor;
   const portionValue = servings * factor;
@@ -141,21 +160,120 @@ export default function IngredientCalculator({
   }
 
   function addToShopping(ingredient: Ingredient): void {
-    if (ingredient.amount.kind !== "measured") return;
-    window.dispatchEvent(
-      new CustomEvent("foodlab:shopping-add", {
-        detail: {
-          recipeId: slug,
-          recipeName,
-          name: ingredient.name,
-          quantity: displayedQuantity(ingredient),
-          unit: ingredient.amount.unit,
-          category: "Інше",
+    const amount: Amount =
+      ingredient.amount.kind === "measured"
+        ? {
+            kind: "measured",
+            quantity: displayedQuantity(ingredient),
+            unit: ingredient.amount.unit,
+          }
+        : { kind: "unspecified" };
+    const current = readShoppingState();
+    const contribution = {
+      id: createShoppingItemId(),
+      origin: "individual" as const,
+      ingredientId: ingredient.id,
+      name: ingredient.name,
+      amount,
+    };
+    const next = {
+      ...current.state,
+      contributions: [...current.state.contributions, contribution],
+    };
+    const persisted = current.persisted && writeShoppingState(next);
+    const sessionSaved = !persisted && writeSessionShoppingState(next);
+    if (persisted || sessionSaved)
+      window.dispatchEvent(new Event("foodlab:shopping-updated"));
+    if (!persisted)
+      setSessionShopping((list) => [
+        ...list,
+        {
+          recipeId: `individual:${contribution.id}`,
+          recipeName: ingredient.name,
+          basePortions: 1,
+          selectedPortions: 1,
+          ingredients: [
+            { ingredientId: ingredient.id, name: ingredient.name, amount },
+          ],
         },
-      }),
+      ]);
+    setAddedIngredients((current) => new Set(current).add(ingredient.id));
+    setAnnouncement(
+      `${ingredient.name} · ${ingredient.amount.kind === "measured" ? ingredientText(ingredient, displayedQuantity(ingredient)) : "за смаком"} ${persisted ? "додано." : sessionSaved ? "додано лише на цей сеанс." : "не вдалося зберегти."}`,
     );
-    setAnnouncement(`${ingredient.name} додано до списку покупок`);
   }
+
+  function addRecipe(): void {
+    const snapshot: SelectedRecipe = {
+      recipeId,
+      recipeName,
+      basePortions: servings,
+      selectedPortions: portionValue,
+      ingredients: ingredients.map((item) => ({
+        ingredientId: item.id,
+        name: item.name,
+        amount:
+          item.amount.kind === "measured"
+            ? {
+                kind: "measured",
+                quantity: item.amount.quantity,
+                unit: item.amount.unit,
+              }
+            : { kind: "unspecified" },
+      })),
+    };
+    const current = readShoppingState();
+    const exists = current.state.selectedRecipes.some(
+      (item) => item.recipeId === recipeId,
+    );
+    if (
+      exists &&
+      !confirm("Цей рецепт уже є у списку. Оновити його порції та склад?")
+    )
+      return;
+    const next = {
+      ...current.state,
+      selectedRecipes: [
+        ...current.state.selectedRecipes.filter(
+          (item) => item.recipeId !== recipeId,
+        ),
+        snapshot,
+      ],
+    };
+    const persisted = current.persisted && writeShoppingState(next);
+    const sessionSaved = !persisted && writeSessionShoppingState(next);
+    if (persisted || sessionSaved)
+      window.dispatchEvent(new Event("foodlab:shopping-updated"));
+    if (persisted)
+      setAnnouncement(
+        `${recipeName} додано до обраних рецептів у списку покупок.`,
+      );
+    else {
+      setSessionShopping((list) => [
+        ...list.filter((item) => item.recipeId !== recipeId),
+        snapshot,
+      ]);
+      setAnnouncement(
+        sessionSaved
+          ? `${recipeName} додано лише на цей сеанс.`
+          : `Не вдалося зберегти ${recipeName}.`,
+      );
+    }
+  }
+
+  useEffect(() => {
+    const addWholeRecipeButton = document.querySelector<HTMLButtonElement>(
+      "[data-recipe-add-whole]",
+    );
+    if (!addWholeRecipeButton) return;
+    const addWholeRecipe = () => addRecipe();
+    addWholeRecipeButton.hidden = false;
+    addWholeRecipeButton.addEventListener("click", addWholeRecipe);
+    return () => {
+      addWholeRecipeButton.removeEventListener("click", addWholeRecipe);
+      addWholeRecipeButton.hidden = true;
+    };
+  }, [recipeId, recipeName, servings, portionValue, ingredients]);
 
   function syncDrafts(nextFactor: number): Record<string, string> {
     return Object.fromEntries(
@@ -264,7 +382,7 @@ export default function IngredientCalculator({
             class="portion-value"
             aria-label={formatPortions(portionValue)}
           >
-            {formatPortions(portionValue).replace(/ порці[яіїй]+$/u, "")}
+            {formatPortions(portionValue)}
           </output>
           <button
             class="stepper-button"
@@ -318,8 +436,8 @@ export default function IngredientCalculator({
           class={`calculator-mode-button${mode ? " is-primary" : ""}`}
           type="button"
           aria-pressed={mode}
-          aria-label={mode ? "Готово" : "Калькулятор"}
-          title={mode ? "Готово" : "Калькулятор"}
+          aria-label={mode ? "Готово" : "Змінити кількість"}
+          title={mode ? "Готово" : "Змінити кількість інгредієнтів"}
           onClick={() => setMode((current) => !current)}
         >
           {mode ? (
@@ -385,14 +503,18 @@ export default function IngredientCalculator({
               class={isAnchor ? "ingredient-is-anchor" : ""}
             >
               <div class="ingredient-row">
-                <input
-                  type="checkbox"
-                  aria-label={`${ingredient.name}, інгредієнт ${index + 1}`}
-                />
-                <div class="ingredient-title">
-                  <span class="ingredient-name">{ingredient.name}</span>
-                  {isAnchor && <span class="anchor-badge">основа</span>}
-                </div>
+                <label class="ingredient-check">
+                  <span class="ingredient-checkbox">
+                    <input
+                      type="checkbox"
+                      aria-label={`${ingredient.name}: підготовлено, інгредієнт ${index + 1}`}
+                    />
+                  </span>
+                  <span class="ingredient-title">
+                    <span class="ingredient-name">{ingredient.name}</span>
+                    {isAnchor && <span class="anchor-badge">основа</span>}
+                  </span>
+                </label>
                 {ingredient.amount.kind === "measured" && mode ? (
                   <span class="calculator-amount-editor">
                     <span class="apply-slot">
@@ -462,14 +584,45 @@ export default function IngredientCalculator({
                     )}
                   </strong>
                 )}
+                <button
+                  class="shopping-add-one"
+                  type="button"
+                  disabled={false}
+                  aria-label={
+                    addedIngredients.has(ingredient.id)
+                      ? `Додано ${ingredient.name}. Натисніть ще раз, щоб додати цю кількість повторно.`
+                      : `Додати ${ingredient.name} до списку покупок`
+                  }
+                  title={
+                    addedIngredients.has(ingredient.id)
+                      ? "Додано · повторне натискання збільшує кількість"
+                      : "Додати до списку покупок"
+                  }
+                  onClick={() => addToShopping(ingredient)}
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    width="18"
+                    height="18"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    {addedIngredients.has(ingredient.id) ? (
+                      <path d="m5 12 4 4L19 6" />
+                    ) : (
+                      <>
+                        <path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 1.9-1.4L21 9H6" />
+                        <circle cx="10" cy="20" r="1" />
+                        <circle cx="18" cy="20" r="1" />
+                      </>
+                    )}
+                  </svg>
+                </button>
               </div>
-              <button
-                class="shopping-add-one"
-                type="button"
-                onClick={() => addToShopping(ingredient)}
-              >
-                До списку
-              </button>
               {changed && mode && (
                 <div class="original-amount">
                   {ingredient.amount.kind === "measured" &&
@@ -489,9 +642,28 @@ export default function IngredientCalculator({
           );
         })}
       </ul>
-      <p class="visually-hidden" aria-live="polite" aria-atomic="true">
-        {announcement}
-      </p>
+      {announcement && (
+        <p
+          class="shopping-feedback"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {announcement}
+        </p>
+      )}
+      {sessionShopping.length > 0 && (
+        <span class="visually-hidden">
+          {sessionShopping.length} змін у списку збережено лише в пам’яті цієї
+          сторінки.
+        </span>
+      )}
+      {sessionShopping.length > 0 && (
+        <span class="visually-hidden">
+          {sessionShopping.length} змін у списку збережено лише в пам’яті цієї
+          сторінки.
+        </span>
+      )}
     </div>
   );
 }

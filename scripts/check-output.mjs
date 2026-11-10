@@ -12,11 +12,31 @@ const recipes = [
 ];
 const guide = read("ai/recipe-authoring/index.html");
 const designReference = read("ai/design-reference/index.html");
+const shopping = read("shopping/index.html");
+const favorites = read("favorites/index.html");
 const missing = read("404.html");
 assert.ok(catalog.includes(`${base}/recipes/hrechka-z-morkvoiu/`));
 assert.ok(catalog.includes(`${base}/recipes/pasta-karbonara/`));
 assert.ok(catalog.includes(`${base}/ai/recipe-authoring/`));
 assert.ok(catalog.includes(`${base}/ai/design-reference/`));
+for (const html of [catalog, shopping]) {
+  for (const text of [
+    'class="shopping-nav-link"',
+    'class="shopping-count"',
+    'title="Список покупок"',
+  ])
+    assert.ok(html.includes(text), text);
+}
+for (const html of [catalog, shopping, favorites])
+  assert.ok(html.includes('class="favorites-nav-link"'));
+for (const text of [
+  "Улюблене",
+  "Увімкніть JavaScript, щоб переглянути та керувати улюбленими рецептами.",
+])
+  assert.ok(favorites.includes(text), text);
+for (const recipe of recipes)
+  assert.ok(recipe.includes("data-favorite-button"));
+assert.ok(catalog.includes("data-favorite-button"));
 for (const text of [
   "Дизайн-референс для AI",
   'data-palette-choice="navy"',
@@ -35,6 +55,15 @@ for (const text of [
   'class="card-link"',
 ])
   assert.ok(catalog.includes(text), text);
+assert.ok(!catalog.includes('class="image-placeholder card-image"'));
+for (const text of [
+  'class="shopping-form"',
+  'id="shopping-name"',
+  'id="shopping-quantity"',
+  'id="shopping-unit"',
+  "Увімкніть JavaScript, щоб переглянути список і керувати ним.",
+])
+  assert.ok(shopping.includes(text), text);
 for (const text of ["Гречка з морквою", "Промийте гречку", "за смаком"])
   assert.ok(recipes[0].includes(text), text);
 for (const text of [
@@ -52,10 +81,14 @@ for (const recipe of recipes)
   for (const text of [
     'class="ingredient-row"',
     'type="checkbox"',
-    'class="image-placeholder hero-image"',
+    'id="ingredients"',
+    'id="steps"',
+    "підготовлено",
     "Ще не перевірено",
   ])
     assert.ok(recipe.includes(text), text);
+for (const recipe of recipes)
+  assert.ok(!recipe.includes('class="image-placeholder hero-image"'));
 for (const text of [
   "Contract: recipe-authoring",
   "Contract version: 1",
@@ -81,7 +114,18 @@ for (const item of JSON.parse(
   assert.ok(guide.includes(item.name), item.name);
 }
 assert.ok(!/@@[A-Z_]+@@/.test(guide));
-for (const html of [catalog, guide, designReference, missing]) {
+assert.match(shopping, /<astro-island\b[^>]*client="load"/);
+assert.match(shopping, /<select\b[^>]*id="shopping-unit"/);
+for (const unit of [
+  'value="piece">шт.',
+  'value="g">г',
+  'value="kg">кг',
+  'value="ml">мл',
+  'value="l">л',
+])
+  assert.ok(shopping.includes(unit), `Missing shopping unit option: ${unit}`);
+assert.match(catalog, /<astro-island\b[^>]*client="load"/);
+for (const html of [guide, designReference, missing]) {
   assert.ok(
     !/<astro-island\b/.test(html),
     "No recipe island outside recipe pages",
@@ -101,6 +145,8 @@ for (const html of [catalog, guide, designReference, missing]) {
 for (const recipe of recipes) {
   assert.match(recipe, /<astro-island\b[^>]*client="only"/);
   assert.ok(recipe.includes('id="static-ingredients"'));
+  assert.ok(recipe.includes("data-recipe-add-whole"));
+  assert.ok(recipe.includes('title="ДОДАТИ ВЕСЬ РЕЦЕПТ ДО СПИСКУ"'));
   assert.ok(!recipe.includes('class="calculator-toolbar"'));
   assert.ok(!recipe.includes('class="calculator-mode-button"'));
 }

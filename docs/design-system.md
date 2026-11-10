@@ -4,7 +4,7 @@ The design kit in `public/design-kit/` supplies the colors, self-hosted fonts, a
 
 ## Design rules
 
-Use calm surfaces, strong monospace headings, readable body text, and small accents. Use natural recipe content. Keep controls large enough for kitchen use. Use one border and surface contrast instead of heavy shadows. The recipe schema has no image field; placeholders use one emoji each. Both current recipes remain unverified.
+Use calm surfaces, strong monospace headings, readable body text, and small accents. Use natural recipe content. Keep controls large enough for kitchen use. Use one border and surface contrast instead of heavy shadows. The recipe schema has no image field. Do not invent images or verification states.
 
 ## Color tokens
 
@@ -31,13 +31,13 @@ Use calm surfaces, strong monospace headings, readable body text, and small acce
 
 `public/design-kit/fonts.css` loads local Inter 400/500/600 and JetBrains Mono 500/700 in Latin and Cyrillic. Body text uses `--sans` at 16px/1.6. Headings use `--mono`: H1 28–40px, H2 24px, H3 and card titles 18px. Step text uses 20px. Description text uses 14px. Metadata uses `--mono` at 13px and badges at 12px. Numbers, time, and quantities use `--mono`.
 
-Spacing tokens are 4, 8, 12, 16, 24, 32, and 48px. Radius tokens are 8, 12, and 16px. Main width is 960px; recipe reading width is 720px. Cards use one column below 600px, two columns from 600px, and three from 900px. Card images are 4:3 and the recipe hero is 16:9. Safe area padding protects the footer. The page must fit 320px.
+Spacing tokens are 4, 8, 12, 16, 24, 32, and 48px. Radius tokens are 8, 12, and 16px. Main width is 960px; recipe reading width is 720px. Cards use one column below 600px, two columns from 600px, and three from 900px. Image treatment depends on approved feature requirements and available authored media. Safe area padding protects the footer. The page must fit 320px.
 
 ## Components and access
 
-The header has a brand link, recipe link, and SVG theme control. Catalog cards are whole links. Search checks recipe titles and ingredient names from validated content. Search and status filters combine. Controls appear only when JavaScript runs; recipes remain readable without it. The detail page uses checkbox rows, numbered steps, a static time chip, and the original notes. The time chip does not start a timer.
+The header has a brand link, recipe link, and SVG theme control. Catalog cards are whole links. Search checks recipe titles and ingredient names from validated content. Search and status filters combine. Controls appear only when JavaScript runs; recipes remain readable without it. The detail page uses preparation checkboxes, numbered steps, a static time chip, and the original notes. The time chip does not start a timer.
 
-Give buttons and inputs at least 44px of touch height. Keep focus visible with a 2px `--accent-text` outline and 2px offset. Respect reduced motion. Use a single emoji in each missing-image placeholder. Do not add emoji to headings, navigation, or primary controls. Use inline SVG for UI icons. Do not invent recipe images, verification states, or cooking behavior.
+Give buttons and inputs at least 44px of touch height. Keep focus visible with a 2px `--accent-text` outline and 2px offset. Respect reduced motion. When a recipe or catalog card has no photo, omit its image area. Do not invent recipe images, verification states, or cooking behavior. Use inline SVG for UI icons. Do not add emoji to headings, navigation, or primary controls.
 
 ## Contrast review
 
@@ -57,3 +57,15 @@ The values below were computed from the token values with the WCAG contrast form
 | Control border on surface |       3.33 |      3.49 |        3.25 |       3.69 |
 
 All listed text pairs exceed 4.5:1. Control borders exceed 3:1. Check both themes and both palettes after a token change.
+
+## Proposed kitchen-use rules
+
+These rules are targets for the next bounded UI review. The current implementation does not
+claim to meet all of them. Approved specifications take precedence. See `specs/003-kitchen-reading/spec.md`.
+
+- K01: The recipe page MUST show ingredients and preparation steps without JavaScript.
+- K02: The page MUST NOT reserve a large image area when a recipe has no image.
+- K03: Primary cooking actions MUST have clear visible labels or equally clear visible context.
+- K04: Ingredient names, amounts, and units MUST remain visually associated at 320 CSS pixels.
+- K05: The interface MUST provide visible feedback after an ingredient is added to the shopping list.
+- K06: Reviews SHOULD cover the recipe and shopping flow at narrow and wide viewport sizes.

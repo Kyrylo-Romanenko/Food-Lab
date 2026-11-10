@@ -6,6 +6,9 @@ export default [
   {
     ignores: [
       "dist/**",
+      "build/**",
+      "coverage/**",
+      "*.min.js",
       ".astro/**",
       "node_modules/**",
       ".specify/**",

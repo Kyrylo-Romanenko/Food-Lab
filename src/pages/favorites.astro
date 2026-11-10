@@ -1,0 +1,25 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import FavoritesList from "../components/FavoritesList";
+
+const recipes = await getCollection("recipes");
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const favorites = recipes.map(({ data }) => ({
+  id: data.recipe.id,
+  title: data.recipe.title,
+  href: `${base}/recipes/${data.slug}/`,
+}));
+---
+
+<Base title="Улюблене">
+  <div class="page-intro">
+    <p class="eyebrow">Особиста збірка</p>
+    <h1>Улюблені страви</h1>
+    <p class="lead">Збережені рецепти доступні лише у цьому браузері.</p>
+  </div>
+  <p class="favorites-no-js" data-favorites-no-js>
+    Увімкніть JavaScript, щоб переглянути та керувати улюбленими рецептами.
+  </p>
+  <FavoritesList client:load recipes={favorites} />
+</Base>

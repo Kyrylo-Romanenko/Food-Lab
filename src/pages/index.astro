@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import Base from "../layouts/Base.astro";
 import catalog from "../content/ingredients.json";
+import FavoriteButton from "../components/FavoriteButton";
 const recipes = (await getCollection("recipes")).sort((a, b) =>
   a.data.recipe.title.localeCompare(b.data.recipe.title, "uk"),
 );
@@ -55,21 +56,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
             )}
           >
             <article class="recipe-card">
+              <FavoriteButton
+                client:load
+                recipeId={data.recipe.id}
+                recipeName={data.recipe.title}
+              />
               <a
                 class="card-link"
                 href={`${base}/recipes/${data.slug}/`}
                 aria-label={`Відкрити рецепт: ${data.recipe.title}`}
               >
-                <span
-                  class="image-placeholder card-image"
-                  role="img"
-                  aria-label={`Фото страви «${data.recipe.title}» відсутнє`}
-                >
-                  <span class="placeholder-icon" aria-hidden="true">
-                    🍽️
-                  </span>
-                  <span class="visually-hidden">Фото страви наразі немає</span>
-                </span>
                 <span class="card-content">
                   <span class="card-title">{data.recipe.title}</span>
                   <span class="card-description">

@@ -8,5 +8,11 @@
   { "id": "guanciale", "name": "Гуанчале" },
   { "id": "egg-yolk", "name": "Яєчний жовток" },
   { "id": "pecorino-romano", "name": "Сир пекоріно романо" },
-  { "id": "black-pepper", "name": "Чорний перець" }
+  { "id": "black-pepper", "name": "Чорний перець" },
+  { "id": "chicken-breast", "name": "Куряче філе" },
+  { "id": "champignons", "name": "Печериці" },
+  { "id": "onion", "name": "Ріпчаста цибуля" },
+  { "id": "sour-cream", "name": "Сметана" },
+  { "id": "chicken-broth", "name": "Курячий бульйон" },
+  { "id": "butter", "name": "Вершкове масло" }
 ]

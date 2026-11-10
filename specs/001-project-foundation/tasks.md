@@ -219,3 +219,178 @@ US3 is tested by verify and handoff review. Do not commit automatically.
   Acceptance checks: Run `npm run verify`; inspect generated recipe and design reference output.
   Non-goals: No recipe data, layout, behavior, token, font, or palette changes.
   Dependencies: T017.
+
+## Phase 16: Add chicken and mushroom julienne
+
+- [x] T019 Add the Ukrainian chicken and mushroom julienne recipe
+
+  Goal: Add the requested six-serving recipe with scalable base ingredients and serving variations.
+  Inputs: user-provided recipe content; recipe authoring guide; design reference; current recipe pages and calculator.
+  Allowed scope: `src/content/ingredients.json`, the new recipe file, local recipe detail presentation, task status, and handoff.
+  Requirements: Recipe text MUST use Ukrainian. Measured ingredients MUST scale from six servings. To-taste items MUST remain unchanged. Serving variations MUST remain outside the ingredient calculation. The page MUST use the existing template, placeholder, and catalog discovery behavior.
+  Acceptance checks: `npm run verify`; local browser review; confirm scaling at 3, 6, and 12 servings; confirm catalog navigation and variation separation. Desktop review completed. Mobile viewport and browser-console inspection were unavailable in the connected browser; report these limits.
+  Non-goals: No global redesign, recipe-specific component, dependency, invented photo, or changes to other recipe data.
+  Dependencies: T018.
+
+- [x] T020 Record kitchen-use guidance and draft scope
+
+  Goal: Record practical UI guidance and the next bounded draft scope.
+  Inputs: constitution; foundation and calculator specifications; design-system and handoff; user request.
+  Allowed scope: design-system, handoff, this task, and the draft kitchen-reading specification.
+  Requirements: C05, C07, C08; preserve approved-source precedence and report conflicts.
+  Acceptance checks: Rules and draft scope are documented; existing conflicts and verification limits are explicit.
+  Non-goals: Product implementation, constitution or recipe contract changes.
+  Dependencies: T019.
+
+- [x] T021 Reconcile foundation and later feature scope
+
+  Goal: Limit foundation-only exclusions and clarify calculator and shopping feature boundaries.
+  Inputs: constitution; foundation specification and plan; calculator specification; user request; handoff.
+  Allowed scope: foundation specification, plan and task list; kitchen-reading draft and checklist; design-system scope note; handoff.
+  Requirements: Preserve constitution precedence and foundation obligations; identify shopping work as requiring its own specification.
+  Acceptance checks: Read amended requirements for consistent scope; run `npm run verify`; record results and limits.
+  Non-goals: No product implementation, constitution change, recipe contract change, or shopping feature approval.
+  Dependencies: T020.
+
+## Phase 18: Shopping list feature (approved)
+
+Inputs: `specs/004-shopping-list/spec.md`, `plan.md`, `research.md`, `data-model.md`,
+`contracts/storage.md`, and `quickstart.md`. The user approved the specification on 2026-11-10.
+Execute T022–T029 in dependency order. This file remains the only authoritative task list.
+
+- [x] T022 Establish shopping domain and tests in `src/lib/shopping.ts` and `tests/shopping.test.ts`
+
+  Goal: Provide one pure authoritative implementation for contributions, unit conversion and totals.
+  Inputs: shopping spec FR-004–FR-006, FR-015; data model; research R02.
+  Allowed scope: `src/lib/shopping.ts`, `tests/shopping.test.ts`.
+  Requirements: Stable ingredient IDs group authored contributions; incompatible units stay separate; to-taste stays unspecified. Finite positive contributions and finite nonnegative stock are validated; legacy zero is preserved. Use calculator factor rules, not a duplicate.
+  Acceptance checks: Test 200 g + 0.3 kg = 500 g, `г` aliases, unknown and incompatible units, unspecified amounts, stock exceeding need, and source-specific removal.
+  Non-goals: DOM, storage access, schema changes, or food-density conversions.
+  Dependencies: T021.
+
+- [x] T023 Implement safe storage migration in `src/lib/shopping-storage.ts` and `tests/shopping-storage.test.ts`
+
+  Goal: Preserve existing lists and validate versioned state without data loss.
+  Inputs: shopping spec FR-009–FR-011; `contracts/storage.md`; data model.
+  Allowed scope: shopping storage and its tests; pure validation in `src/lib/shopping.ts` if needed.
+  Requirements: Validate all nested fields; preserve each valid v1 entry and source without inventing recipe selections; do not overwrite v1 or corrupt v2; read back v2 writes; show unsaved failure to callers. Selected portions are finite positive with factors 0.1–20 inclusive.
+  Acceptance checks: Tests cover valid v1, null/zero quantity, malformed sources, corrupt JSON, blocked read/write, quota, interrupted write, readback, and repeated initialization.
+  Non-goals: Real user data, cloud sync, or silent fallback that replaces saved data.
+  Dependencies: T022.
+
+- [x] T024 [US1] Add recipe contributions in `src/components/IngredientCalculator.tsx` and `src/pages/recipes/[slug].astro`
+
+  Goal: Add a whole recipe or one ingredient using stable IDs and current displayed portions.
+  Inputs: shopping spec FR-001–FR-004, FR-010; calculator spec; storage contract.
+  Allowed scope: recipe page and calculator island; shopping domain/storage integration.
+  Requirements: Include measured and to-taste ingredients. Confirm success only after persistence; offer session-only unsaved operation on storage failure. Re-adding a selected recipe requires explicit update or cancellation.
+  Acceptance checks: Add a recipe at changed portions; add a to-taste ingredient; repeat recipe without silent doubling; verify failure feedback and independent recipe calculator state.
+  Non-goals: Recipe schema or AI guide change.
+  Dependencies: T023.
+
+- [x] T025 [US1] Show selected recipes and aggregated needs in `src/components/ShoppingList.tsx`
+
+  Goal: Let the cook inspect sources, explicitly edit list portions, and remove one recipe's contributions.
+  Inputs: shopping spec FR-002–FR-005; data model; T022–T024.
+  Allowed scope: shopping component and shopping domain integration.
+  Requirements: One snapshot per stable recipe ID; finite positive portions with factor 0.1–20; recipe-page changes do not update list state. Removal leaves independent contributions intact.
+  Acceptance checks: Add two synthetic recipes with a shared ingredient; change one list portion count and remove that recipe; check total, source breakdown, and other contributions.
+  Non-goals: Automatic refresh from later recipe edits or removal of legacy rows.
+  Dependencies: T024.
+
+- [x] T026 [US2] Add home-stock controls in `src/components/ShoppingList.tsx` and `src/lib/shopping.ts`
+
+  Goal: Show needed, available, and remaining amounts with reversible full and partial availability.
+  Inputs: shopping spec FR-006, FR-008, FR-010; data model.
+  Allowed scope: shopping component, domain logic, relevant tests.
+  Requirements: Stock is finite and nonnegative, can exceed need, and remaining is never negative. Reject incompatible or invalid entries without changing valid state; changing stock returns affected cart row to outstanding.
+  Acceptance checks: 500 g needed and 200 g available yields 300 g; full availability and reversal work; invalid values leave the previous amount intact.
+  Non-goals: Persistent inventory outside this list.
+  Dependencies: T025.
+
+- [x] T027 [US3] Complete shopping actions in `src/components/ShoppingList.tsx` and `src/pages/shopping.astro`
+
+  Goal: Support manual products, reversible cart grouping, deletion, progress and a static fallback.
+  Inputs: shopping spec FR-007–FR-013; storage and sharing contract.
+  Allowed scope: shopping page, component, domain/storage integration, relevant tests.
+  Requirements: Add/edit/remove manual entries; undo restores the entity without undoing later changes. Preserve existing copy, share, clear and legacy-link import with explicit validation and link privacy notice; no network transmission without a user action.
+  Acceptance checks: Add/edit/mark/reload/unmark/remove a manual item; undo after unrelated changes; validate v1/v2 link import, failure and clear paths; inspect the no-JavaScript explanation.
+  Non-goals: Categories, pricing, accounts, or sync.
+  Dependencies: T026.
+
+- [x] T028 [US3] Design responsive shopping presentation in `src/styles/global.css` and `src/components/ShoppingList.tsx`
+
+  Goal: Make quantities and core actions readable at home and in a shop.
+  Inputs: shopping spec FR-012; `docs/design-system.md`; existing tokens.
+  Allowed scope: shopping-specific presentation, component markup and shopping page.
+  Requirements: Ukrainian visible labels, keyboard access and focus, practical touch targets, 320 px fit, separate outstanding and cart groups, compact manual entry and secondary sharing actions.
+  Acceptance checks: Review 320, 390 and 1280 px, both themes, keyboard and representative long labels; report unexecuted checks.
+  Non-goals: Unrelated site redesign or new dependencies.
+  Dependencies: T027.
+
+- [x] T029 Verify shopping flow and update `docs/handoff.md` and `scripts/check-output.mjs`
+
+  Goal: Validate the complete feature and record results and limitations.
+  Inputs: shopping quickstart, spec FR-014–FR-015, all preceding feature tasks.
+  Allowed scope: output checks, feature-relevant tests, task status and handoff.
+  Requirements: Run `npm run verify`; validate base path, static fallback and representative end-to-end flows using synthetic data. Record all failures and unexecuted checks. Do not include private data.
+  Acceptance checks: Verify outputs and browser scenarios in quickstart; confirm no recipe contract or AI authoring change; update task status and handoff.
+  Non-goals: Deployment, private data export, or claims of unrun accessibility checks.
+  Dependencies: T028.
+
+### Dependencies and delivery
+
+T022 → T023 → T024 → T025 → T026 → T027 → T028 → T029. Shared domain/storage changes are
+sequential. Each story has an independent scenario in `specs/004-shopping-list/spec.md`; the first
+usable shopping release includes all three stories. Independent documentation review can run in
+parallel with domain test design, without editing shared implementation files.
+
+## Phase 19: Kitchen-use refinements
+
+- [x] T030 Improve recipe reading, shopping feedback, mobile catalog, and shopping list
+
+  Goal: Make recipe and shopping flows clear and compact on narrow screens.
+  Inputs: user request; constitution; T020 kitchen-reading draft; approved `specs/005-kitchen-use/spec.md`; current recipe, catalog, shopping, and design-system code.
+  Allowed scope: recipe and catalog presentation, existing shopping-list UI and storage adapter, design-system documentation, domain tests, output checks, recipe step text, task status, and handoff.
+  Requirements: Missing photos MUST NOT reserve large areas. Ingredient rows MUST keep name, amount, and shopping action associated at 320 CSS pixels. Preparation checkboxes MUST name their purpose and have a 48px label hit area. Primary controls MUST have visible labels or clear state feedback. Recipe shopping additions MUST persist across navigation, and repeated taps MUST show their quantity effect. The shopping form MUST use visible labels and a useful empty state. Catalog cards MUST prioritize recipe information. Search, status filters, and empty results MUST remain functional.
+  Acceptance checks: Run `npm run verify`; inspect 320, 390, and 1280 CSS pixel layouts; verify recipe-to-list add, repeat, and purchased flows; inspect search, filters, and empty results; report checks that could not run.
+  Non-goals: No recipe schema or authoring-contract change, cooking mode, timer, new dependency, private data export, deploy, or push.
+  Dependencies: T021.
+
+## Phase 20: Favorites feature
+
+Inputs: `specs/006-favorite-recipes/spec.md`, `plan.md`, `data-model.md`, `contracts/storage.md`,
+and `tasks.md`. The user approved the specification. The feature-local tasks remain in
+`specs/006-favorite-recipes/tasks.md`; this file remains the authoritative project task list.
+
+- [x] T048 Implement and verify saved favorite recipes in `specs/006-favorite-recipes/`
+
+  Goal: Let users save, manage, share, and import favorite recipes without an account.
+  Inputs: approved Favorites specification and plan; constitution; current recipe catalog and storage patterns.
+  Allowed scope: Favorites domain and storage, recipe and catalog controls, header count, Favorites page, feature tests, generated-output checks, task status, and handoff.
+  Requirements: Persist only valid known recipe IDs in browser storage. Keep updates synchronized in the current and other tabs. Share and import only after explicit user action and confirmation. Preserve current saved data when storage or validation fails. Keep static guidance when JavaScript is unavailable. Do not include private data in URLs or repository files.
+  Acceptance checks: Follow `specs/006-favorite-recipes/quickstart.md`; run `npm run verify` and the `/Food-Lab/` build/output check; record browser checks and limitations in `docs/handoff.md`.
+  Non-goals: Accounts, cloud sync, recommendations, private-data export, or changes to the recipe contract.
+  Dependencies: T030.
+
+- [x] T049 Correct shopping-list row actions and quantity editing in `specs/004-shopping-list/`
+
+  Goal: Restore per-row deletion and copy actions, replace home-stock controls with editable list quantities, and preserve existing saved data.
+  Inputs: User request dated 2026-11-10; approved shopping-list specification and its explicit amendment; shopping data and storage contracts; constitution.
+  Allowed scope: shopping specification, plan, data model, storage contract, quickstart, component, domain, styles, tests, output checks, task status, and handoff.
+  Requirements: Preserve existing v2 stock fields without applying them to totals. Persist strict row quantity overrides and clear them when source contributions change. Delete only the chosen row and its sources; preserve unrelated rows and support undo. Provide selectable copy text when clipboard access is unavailable.
+  Acceptance checks: Run `npm run verify`, the synthetic shopping quickstart, and the `/Food-Lab/` build/output check. Record browser results and limits.
+  Non-goals: Version 3 storage, server sharing, accounts, recipe contract changes, or private shopping data.
+  Dependencies: T048.
+
+## Phase 21: Shopping row action order
+
+- [x] T050 Show edit before delete in each shopping row
+
+  Goal: Put the non-destructive row action before deletion.
+  Inputs: User request and screenshot dated 2026-11-10; shopping row markup and styles.
+  Allowed scope: shopping row action markup and grid placement; task status and handoff.
+  Requirements: The edit control MUST appear and receive keyboard focus before the delete control.
+  Acceptance checks: Run `npm run verify`; inspect the shopping row markup and its explicit grid columns.
+  Non-goals: No shopping behavior, data, layout, or other control changes.
+  Dependencies: T049.

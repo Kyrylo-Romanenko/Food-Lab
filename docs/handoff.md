@@ -1,4 +1,191 @@
+## Shopping-list corrections (2026-11-10)
+
+The shopping row has a visible delete button for every source, including recipe ingredients. Deleting
+a row removes its recipe snapshots and independent contributions for that row; Undo restores them
+without replacing unrelated state. Measured row quantities can be edited in the row menu and persist
+as validated v2 overrides. A source-quantity change clears the override and resets the cart row.
+The row places the edit control before the delete control in both visual and keyboard order.
+At-home stock no longer affects totals or appears in the interface. Existing v2 stock fields remain
+validated and preserved for compatibility.
+
+Copy and copy-link first use the browser Clipboard API. If access is unavailable, the page shows a
+selectable text field with the list or link. Browser review on the isolated `localhost` origin added
+a synthetic 500 g item, edited it to 350 g, confirmed 350 g after reload, deleted it, restored it
+with Undo, and deleted it again. The test list returned to its empty state. The user's
+`127.0.0.1` list and operating-system clipboard were not read or changed.
+
+`npm run verify` and the `/Food-Lab/` build/output check passed after these changes. The copy and
+copy-link browser actions were not run because they would write synthetic data to the user's system
+clipboard. Their clipboard failure fallback was reviewed in code. Responsive layout at 320 CSS
+pixels was not rechecked after adding the row delete control; the earlier T045 review covered the
+prior row layout. Browser storage failure and JavaScript-disabled behavior also remain unverified.
+
+## Completed feature: favorite recipes (2026-11-10)
+
+Feature tasks T001–T014 in `specs/006-favorite-recipes/tasks.md` are complete. The catalog and
+recipe pages have favorite controls. The header shows the saved count, and `/favorites/` lists
+saved recipes. Users can remove one recipe, confirm clearing the list, and explicitly share or
+import a validated list. Browser storage uses a strict versioned envelope; malformed or failed
+storage operations do not report success. Static output includes no-JavaScript guidance. The
+recipe contract and AI authoring guide did not change.
+
+The feature tests cover validation, unique add/remove/clear/merge behavior, URL fragment round trips,
+malformed and oversized fragments, storage failures, read-back validation, and same-tab and
+cross-tab updates. Browser review confirmed adding favorites from the catalog and recipe page,
+header count updates, saved recipe links, removal, confirmed import, rejection of an unknown recipe
+ID, clearing, 320/390/1280 CSS pixel layouts, both themes, keyboard focus, accessible names, and no
+horizontal overflow. Synthetic data was removed from the isolated `localhost` origin. The user's
+`127.0.0.1` shopping list was not opened or changed.
+
+Browser cancellation of share and clear confirmations, the storage-failure UI, and an actual
+JavaScript-disabled browser session were not verified. The clear confirmation was accepted during
+the browser review. `npm run verify` passed: Astro check found zero diagnostics, lint and format
+checks passed, all 91 tests passed, the static build produced nine pages, and generated-output checks
+passed. The separate `/Food-Lab/` build and output check also passed.
+
+## Recipe sharing and serving variations (2026-11-10)
+
+The recipe page shows each serving option in its own bordered card. Recipe notes use `Варіант: <title>` paragraphs to start a card; following paragraphs stay grouped under that option. Multiple cards form a horizontal scroll-snap carousel with a visible next-card edge on narrow screens; a single option uses the full width. The recipe title row has a share icon. It uses the browser share sheet when available and copies the current recipe URL otherwise, with a status message for the copy result. Astro check, lint, formatting, all 84 tests, static build and generated-output checks passed after these changes. Browser review confirmed both serving cards and the share button render on the local recipe page. The share action itself was not activated in the browser.
+
+## Current shopping-list implementation update (2026-11-10)
+
+Feature tasks T031–T046 are complete. T045 is complete after responsive browser review at 320, 390,
+and 1280 CSS pixels using a synthetic item on the isolated `localhost` origin. The page had no
+horizontal overflow at any width. At mobile widths the product field uses the full row, with quantity
+and unit fields on the next line. A long synthetic name wrapped without clipping. At 320 px the
+checkbox measured 24×24 px inside a 156×162 px clickable label, the row action measured 44×44 px,
+and the home-stock input was 44 px high. Both themes rendered. Keyboard navigation reached the product
+field and showed a 3 px focus outline. The synthetic item and local test storage were removed after
+review.
+
+The shopping domain tests now cover recipe snapshots with independent portions, to-taste rows,
+shared-ingredient aggregation and source breakdown, duplicate recipe IDs, stock subtraction and
+reversal, cart reset after changed needs, and imported identity collisions. A cart reset now keeps
+the purchased state of a newly imported row when its identity was remapped. The storage tests cover
+legacy-array and v2-envelope validation, malformed imports, and non-destructive merge behavior.
+Browser import checks confirmed that canceling a v1 import leaves the list empty, confirming the v1
+import adds its legacy row, and confirming a v2 import adds its item. Copy-link sharing and clear/
+undo were reviewed in code but were not run in the browser.
+
+Manual product entry uses a unit select with five common choices: `шт.`, `г`, `кг`, `мл` and `л`.
+The default is `шт.`. Generated-output checks assert the select and all five options. The browser
+confirmed that a manual amount of 1 kg is normalized to 1,000 g in the shopping row.
+
+The shopping icon in the header now has a hover title, an accessible name, and a badge with the
+aggregated row count. Recipe additions and list edits announce state changes so the badge updates in
+the current tab. List copy/share actions use one compact icon row; clear is separated and retains a
+confirmation prompt. Recipe content is centered, and the whole-recipe action is an icon beside the
+title with a descriptive tooltip. Shopping rows keep source text below the item name, align amount,
+home stock and a collapsed action menu in one row where space permits, and move home stock below the
+main line at very narrow widths. The empty-state card uses the full form width.
+
+Browser review confirmed the header badge updated to nine aggregate rows after adding a test recipe,
+the compact row and expanded manual-action menu render correctly, and the empty state matches the form width. All temporary
+checks used the isolated `localhost` origin and were removed; the saved list at `127.0.0.1` was not
+changed. The local dev server remains available on port 4321.
+
+`npm run verify` passed: Astro check reported 27 files with zero errors, warnings or hints; lint and
+format checks passed; all 84 tests passed; the static build and generated-output check passed. A
+separate build with `BASE_PATH=/Food-Lab/` and `node scripts/check-output.mjs /Food-Lab/` passed.
+
+The local synthetic browser run added a 500 g manual item, recorded 200 g at home, showed 300 g to
+buy, marked it in the cart, and retained both the stock and cart state after reload. It then added
+the buckwheat recipe at two portions, changed the recipe-page calculator to three portions, and
+confirmed the shopping list still showed the saved two-portion snapshot. The test recipe and manual
+item were removed, and the list returned to its empty state. Unit tests cover shared totals from two
+recipes; the browser did not run that exact two-recipe case. No private list data was opened or used.
+
+The full quickstart was not completed. Browser storage migration, blocked-storage and quota-error
+flows, and JavaScript-disabled behavior remain unverified. T045 completed the 320, 390, and 1280 CSS-
+pixel, long-label, and hit-area review for the previous shopping-row layout. This task did not repeat
+the 320-pixel check after the later row-action change.
+
+## Completed tasks: T022–T029 shopping list
+
+The approved shopping-list feature uses v2 browser storage. Valid v1 entries migrate as separate
+legacy contributions. The v1 key remains as recovery data, and migration never invents selected
+recipes. Invalid input and failed writes do not replace stored values. Every v2 write passes strict
+validation and read-back comparison.
+
+Recipe pages add either a whole recipe snapshot or one ingredient, including to-taste ingredients.
+List portions remain independent from the recipe calculator. The list groups compatible measured
+contributions by stable ingredient ID, shows source details, supports manual products, available-at-
+home amounts, and a reversible cart. Manual, legacy, individual, and recipe sources can be removed.
+Share and import actions are explicit. The static shopping page includes a no-JavaScript message.
+The recipe contract and AI authoring guide did not change.
+
+`npm run verify` passed: Astro diagnostics, lint, formatting, 75 tests, static build, and generated-
+output checks. The `/Food-Lab/` build and `node scripts/check-output.mjs /Food-Lab/` passed. A local
+synthetic browser flow confirmed recipe addition, independent portions, 500 g needed minus 200 g at
+home equals 300 g, and cart marking. The browser used a separate port and disposable profile.
+
+The browser viewport could not be set to exact 320, 390, or 1280 CSS pixels through the connected
+controls. Those visual widths, light theme, keyboard-only use, JavaScript-disabled behavior, and
+malformed storage in a browser remain unverified. Domain tests cover two-recipe aggregation and source
+breakdown. The dev server reported a hydration warning during inspection; the component now renders
+a stable status element and detects Web Share after hydration. This final fix was not rechecked in a
+browser. No real saved list was opened or changed.
+
+## Completed task: T030 kitchen-use refinements
+
+T030 removes missing-image areas from recipe and catalog pages. Recipe pages now include section
+jump links, explicit preparation-checkbox context, 48px checkbox hit areas, labeled calculator and
+portion controls, and compact ingredient rows. The pasta sauce sequence is split into two steps.
+The catalog keeps search, status filters, and no-result feedback. The shopping page has persistent
+field labels, a concise empty state, separated conditional action groups, and localized unit labels.
+
+Recipe additions now write through `src/lib/shopping-storage.ts` to the existing v1 local key and
+item format before navigation. Repeat additions merge compatible measured amounts, and the recipe
+page confirms both the addition and repeat behavior. Ingredients without measured amounts cannot
+be added through the measured action. Malformed or inaccessible saved data is not overwritten.
+The recipe schema and AI authoring contract did not change.
+
+`npm run verify` passed: 26 Astro files had zero diagnostics; lint and formatting passed; 63 tests
+passed; the static build and generated-output checks passed. The first full run stopped at the
+pre-existing `src/layouts/Base.astro` formatting warning. Prettier formatted that file. The next
+run exposed an output-check rule that also rejected the intended shopping-list island; the check
+now allows that island and still rejects islands on the catalog and reference pages. The final
+full run passed.
+
+Browser review used the local preview. At 320x780, the recipe had no horizontal overflow, showed
+two complete ingredient rows, and each checkbox label measured at least 48px. At 390x844, it showed
+four complete rows. At 1280x900, the recipe had no horizontal overflow and both jump links were
+present. The catalog search showed its no-result message; the unverified filter showed 3 recipes
+and the verified filter showed 0. The shopping flow added buckwheat twice, showed 320 г, marked it
+purchased, and removed the synthetic item. The list was empty after cleanup. A full assistive-
+technology review, browser-console review, and an actual browser session with JavaScript disabled
+were not run. The generated static output still contains the recipe fallback list.
+
+At T030 completion, the broader shopping-list proposal in T022–T029 remained pending. The later
+approved work in T022–T029 adds list-specific portions, stock tracking, and v2 migration.
+
+## Documentation task: reconcile feature scope
+
+T021 amends the foundation specification and plan to limit their feature exclusions to the
+original delivery. The approved calculator remains a separate feature. A shopping-list feature
+requires its own approved specification. This task does not implement shopping behavior or change
+the recipe contract. `npm run verify` passed Astro check and lint but stopped at the format check:
+`src/layouts/Base.astro` has formatting differences in parallel work. The file was not changed by
+T021. Separate `npm run test:run` passed 62 tests, `npm run build` passed, and
+`node scripts/check-output.mjs` passed. No browser or accessibility review was run.
+
+## Documentation task: kitchen-use guidance
+
+T020 records proposed kitchen-use rules, a bounded draft specification, and source conflicts.
+It does not change product behavior, the recipe contract, or the AI authoring guide. The rules
+describe target behavior; current compliance has not been established. `npm run verify` passed: Astro check, lint, formatting, 60 tests, static build, and output checks.
+The first run stopped at formatting; the documented files were formatted before the passing run.
+No browser or accessibility checks were run for this documentation task.
+
 # Foundation handoff
+
+## Completed task: chicken and mushroom julienne
+
+T019 adds `Жульєн з куркою та печерицями` at six base servings and adds the required ingredient IDs to the public catalog. The authored body uses plain paragraphs accepted by contract v1. The existing detail page recognizes the `Варіанти подавання` paragraph as a section boundary and renders a separate heading. The calculation baseline contains no cheese or tartlets. Sour cream, broth, and butter use the midpoints 225 g, 125 ml, and 25 g because the strict contract does not support numeric ranges. Oil, salt, and black pepper use the existing to-taste amount.
+
+`npm run verify` passed after implementation: Astro check, lint, formatting, 60 tests, static build, and generated-output checks. The local page rendered with its missing-image placeholder. Browser checks confirmed 3 servings (250 g chicken, 250 g mushrooms, 1½ onions), 6 servings (the base values), and 12 servings (1,000 g chicken, 1,000 g mushrooms, 6 onions). The 12-serving state was reset. The catalog linked to the recipe, and the recipe navigation returned to the catalog. The separate serving-variations heading and its content remained visible while the calculator changed servings.
+
+The browser screenshot showed the available desktop layout. A mobile-width viewport could not be set through the connected browser controls. Browser console inspection was unavailable. The local route returned 200, but the browser requested the repository's missing `/favicon.ico` and received 404. The production build and generated-output checks passed. Mobile layout and browser-console inspection remain unverified. No other recipes or global styles changed.
 
 ## Current feature: ingredient calculator
 
@@ -50,13 +237,16 @@ in both modes; font equality is provided by the shared `.amount-unit` rule. Exac
 testing remains unverified. `npm run verify` passed with zero Astro diagnostics, clean lint and
 formatting, 60 passing tests, a static build, and generated-output checks after the font update.
 
-## Current feature
+## Feature context
 
-specs/001-project-foundation/spec.md. Foundation only. Personal Cookbook remains provisional.
+The foundation is in `specs/001-project-foundation/`. The completed calculator work is in
+`specs/002-ingredient-calculator/`. Favorites is in `specs/006-favorite-recipes/`. Personal
+Cookbook remains provisional.
 
 ## Task status
 
-Completed: T001-T018. Pending foundation task IDs: None.
+Completed foundation tasks: T001-T030 and T048-T050. Pending foundation task IDs: None. Feature-local
+Favorites tasks T001-T014 and shopping-list tasks T031-T048 are complete.
 The authoritative task contracts are in specs/001-project-foundation/tasks.md.
 
 ## Verification
@@ -166,10 +356,16 @@ Public recipe discovery validates every Markdown file under src/content/recipes/
 
 ## Next specification
 
-No next product feature is approved. The ingredient calculator is specified in
-`specs/002-ingredient-calculator/`; it includes portion scaling and per-recipe local restoration.
-Write a separate Spec Kit specification for any new product scope. PWA validation remains a
-follow-up. Check compatibility before selecting a plugin.
+The kitchen-reading draft is `specs/003-kitchen-reading/spec.md`; T030 implements the requested
+subset and its remaining checklist records open review criteria. The shopping-list feature in
+`specs/004-shopping-list/` is approved and implemented by T022–T029 with row-action and quantity
+editing corrections in T049. Selected recipe portions stay independent from later recipe-page
+calculator changes.
+
+The 2026-11-10 foundation amendment resolves the scope conflict with the approved calculator:
+foundation FR-004 and FR-010 exclusions apply to the original foundation delivery, not separately
+specified features. The original plan has the same scope clarification. The constitution remains
+binding. PWA validation remains a follow-up.
 
 ## Local operation
 

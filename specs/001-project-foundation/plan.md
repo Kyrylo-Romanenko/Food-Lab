@@ -3,6 +3,13 @@
 **Branch**: existing main | **Date**: 2026-11-07 | **Spec**: [spec.md](spec.md)
 **Input**: Approved bootstrap specification.
 
+## Scope amendment: 2026-11-10
+
+This plan describes the original foundation delivery. Its constraints on storage, scaling,
+client runtime, and controls apply to that delivery, not to separately specified features.
+The approved calculator specification defines the calculator. Shopping-list development requires
+its own approved specification. The constitution continues to govern every feature.
+
 ## Summary
 
 Generate static Ukrainian catalog and recipe pages. Publish one generated English authoring contract.

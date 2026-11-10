@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import Base from "../../layouts/Base.astro";
 import catalog from "../../content/ingredients.json";
 import IngredientCalculator from "../../components/IngredientCalculator";
+import FavoriteButton from "../../components/FavoriteButton";
 export async function getStaticPaths() {
   return (await getCollection("recipes")).map((entry) => ({
     params: { slug: entry.data.slug },
@@ -12,6 +13,22 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const recipe = entry.data.recipe;
 const names = new Map(catalog.map((item) => [item.id, item.name]));
+const noteParagraphs = entry.data.notes.split(/\n\s*\n/).filter(Boolean);
+const variationStart = noteParagraphs.indexOf("Варіанти подавання");
+const notes =
+  variationStart < 0 ? noteParagraphs : noteParagraphs.slice(0, variationStart);
+const variations =
+  variationStart < 0 ? [] : noteParagraphs.slice(variationStart + 1);
+const servingVariations: { title: string; paragraphs: string[] }[] = [];
+for (const paragraph of variations) {
+  const heading = paragraph.match(/^Варіант: (.+)$/);
+  if (heading) {
+    servingVariations.push({ title: heading[1], paragraphs: [] });
+  } else if (servingVariations.length > 0) {
+    const currentVariation = servingVariations[servingVariations.length - 1];
+    currentVariation?.paragraphs.push(paragraph);
+  }
+}
 const labels = {
   g: "г",
   kg: "кг",
@@ -27,7 +44,72 @@ const difficulty = { easy: "Легко", medium: "Помірно", hard: "Скл
 <Base title={recipe.title}>
   <article class="recipe-detail">
     <p class="eyebrow">Рецепт · {difficulty[recipe.difficulty]}</p>
-    <h1>{recipe.title}</h1>
+    <div class="recipe-title-row">
+      <h1>{recipe.title}</h1>
+      <div class="recipe-title-actions">
+        <FavoriteButton
+          client:load
+          recipeId={recipe.id}
+          recipeName={recipe.title}
+        />
+        <button
+          class="recipe-icon-action"
+          type="button"
+          aria-label="Додати весь рецепт до списку"
+          title="ДОДАТИ ВЕСЬ РЕЦЕПТ ДО СПИСКУ"
+          data-recipe-add-whole
+          hidden
+        >
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            width="22"
+            height="22"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 1.9-1.4L21 9H6" />
+            <circle cx="10" cy="20" r="1" />
+            <circle cx="18" cy="20" r="1" />
+            <path d="M12 5v6m-3-3h6" />
+          </svg>
+        </button>
+        <button
+          class="recipe-icon-action"
+          type="button"
+          aria-label="Поділитися рецептом"
+          title="Поділитися рецептом"
+          data-recipe-share
+        >
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            width="22"
+            height="22"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="18" cy="5" r="3" />
+            <circle cx="6" cy="12" r="3" />
+            <circle cx="18" cy="19" r="3" />
+            <path d="m8.6 10.5 6.8-4m-6.8 9 6.8 4" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <p
+      class="recipe-share-feedback"
+      data-recipe-share-feedback
+      role="status"
+      aria-live="polite"
+      hidden
+    ></p>
     <p class="detail-status">
       {recipe.status === "unverified" ? "Ще не перевірено" : "Перевірено"}
     </p>
@@ -46,21 +128,17 @@ const difficulty = { easy: "Легко", medium: "Помірно", hard: "Скл
         <dd>{recipe.time.cook} хв</dd>
       </div>
     </dl>
-    <div
-      class="image-placeholder hero-image"
-      role="img"
-      aria-label={`Фото страви «${recipe.title}» відсутнє`}
-    >
-      <span class="placeholder-icon" aria-hidden="true">
-        🍽️
-      </span>
-      <span class="visually-hidden">Фото страви наразі немає</span>
-    </div>
+    <nav class="recipe-jump-links" aria-label="Навігація рецептом">
+      <a href="#ingredients">Інгредієнти</a>
+      <a href="#steps">Приготування</a>
+    </nav>
     <section aria-labelledby="ingredients">
       <h2 id="ingredients">Інгредієнти</h2>
+      <p class="ingredient-check-help">Позначте інгредієнт після підготовки.</p>
       <IngredientCalculator
         client:only="preact"
         slug={entry.data.slug}
+        recipeId={recipe.id}
         recipeName={recipe.title}
         servings={recipe.servings}
         fallbackId="static-ingredients"
@@ -74,10 +152,12 @@ const difficulty = { easy: "Легко", medium: "Помірно", hard: "Скл
         {recipe.ingredients.map((item, index) => (
           <li>
             <label class="ingredient-row">
-              <input
-                type="checkbox"
-                aria-label={`${names.get(item.ingredientId)}, інгредієнт ${index + 1}`}
-              />
+              <span class="ingredient-checkbox">
+                <input
+                  type="checkbox"
+                  aria-label={`${names.get(item.ingredientId)}: підготовлено, інгредієнт ${index + 1}`}
+                />
+              </span>
               <span class="ingredient-name">
                 {names.get(item.ingredientId)}
               </span>
@@ -101,13 +181,75 @@ const difficulty = { easy: "Легко", medium: "Помірно", hard: "Скл
         ))}
       </ol>
     </section>
-    {entry.data.notes && (
+    {notes.length > 0 && (
       <section aria-labelledby="notes">
         <h2 id="notes">Примітки</h2>
-        {entry.data.notes.split(/\n\s*\n/).map((note) => (
+        {notes.map((note) => (
           <p>{note}</p>
         ))}
       </section>
     )}
+    {variations.length > 0 && (
+      <section aria-labelledby="serving-variations">
+        <h2 id="serving-variations">Варіанти подавання</h2>
+        <div
+          class:list={[
+            "serving-variations",
+            servingVariations.length === 1 && "serving-variations--single",
+          ]}
+          role="region"
+          aria-label="Карусель варіантів подавання"
+          tabindex="0"
+        >
+          {servingVariations.map((variation) => (
+            <article class="serving-variation">
+              <h3>{variation.title}</h3>
+              {variation.paragraphs.map((paragraph) => (
+                <p>{paragraph}</p>
+              ))}
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
   </article>
 </Base>
+
+<script>
+  const shareButton = document.querySelector<HTMLButtonElement>(
+    "[data-recipe-share]",
+  );
+  const shareFeedback = document.querySelector<HTMLElement>(
+    "[data-recipe-share-feedback]",
+  );
+  let feedbackTimeout: number | undefined;
+
+  shareButton?.addEventListener("click", async () => {
+    const shareData = {
+      title: document.title,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        return;
+      }
+
+      await navigator.clipboard.writeText(shareData.url);
+      if (shareFeedback) {
+        shareFeedback.textContent = "Посилання на рецепт скопійовано.";
+        shareFeedback.hidden = false;
+        window.clearTimeout(feedbackTimeout);
+        feedbackTimeout = window.setTimeout(() => {
+          shareFeedback.hidden = true;
+        }, 3000);
+      }
+    } catch {
+      if (shareFeedback) {
+        shareFeedback.textContent = "Не вдалося поділитися посиланням.";
+        shareFeedback.hidden = false;
+      }
+    }
+  });
+</script>

@@ -5,6 +5,15 @@
 **Status**: Approved for implementation by bootstrap request
 **Input**: User bootstrap contract. No architecture research supplied.
 
+## Scope amendment: 2026-11-10
+
+The user requested reconciliation of foundation scope with the approved ingredient calculator and
+shopping-list work. The foundation exclusions in FR-004 and FR-010 apply to the original foundation
+implementation only. They do not prohibit separately specified features. The calculator is governed
+by `specs/002-ingredient-calculator/spec.md`. Shopping-list development requires its own approved
+specification; existing code alone does not define or approve that scope. This amendment does not
+change the constitution, recipe contract, or unrelated foundation obligations.
+
 ## User Scenarios & Testing
 
 ### User Story 1 - Read public recipes (Priority: P1)
@@ -52,13 +61,13 @@ Missing Git metadata MUST produce an explicit unknown context build.
 - **FR-001**: Generate catalog, recipe, AI guide, and not-found HTML. Use trailing slashes and support a configured base path. Do not require JavaScript for reading.
 - **FR-002**: Strictly validate Markdown frontmatter and all nested objects. Validate unique IDs, slugs, and ingredient references before collection storage can hide duplicates.
 - **FR-003**: Provide a small ingredient catalog and one original Ukrainian unverified recipe. Numeric measured amounts MUST be positive. To-taste amounts MUST be explicit. Do not add images or fabricated history.
-- **FR-004**: Use a shared layout, requested warm light/dark tokens, system fonts, semantic HTML, visible focus, 48px link targets, and a 320px-friendly layout. Respect reduced motion. Do not add future controls.
+- **FR-004**: Use a shared layout, requested warm light/dark tokens, system fonts, semantic HTML, visible focus, 48px link targets, and a 320px-friendly layout. Respect reduced motion. The foundation implementation does not add future controls; separately specified features may add controls.
 - **FR-005**: Render docs/ai/recipe-authoring.md through a build-time Markdown mechanism. Generate catalog, enums, units, and source-revision metadata. The complete selectable pack MUST have no unresolved markers.
 - **FR-006**: Define contract version 1 for create, update, and ingredient proposals. Include all fields, constraints, paths, routes, workflows, example, boundaries, privacy, response sections, uncertainty rules, and exact validation commands. Preserve IDs and supplied content during updates.
 - **FR-007**: Provide required npm commands. Verify MUST run Astro/types, lint, format checks, production-code unit tests, build, and output checks in order. Test the guide example against production schemas and catalog.
 - **FR-008**: Provide pull-request/main-push CI, minimal permissions, npm cache, npm ci, and verify. Preserve MIT; add CC BY 4.0 content notice and rights/privacy guidance. Ignore generated and private files.
 - **FR-009**: Provide concise AGENTS.md, operational README, at most three ADRs, and a handoff. Record runtime/tool versions, assumptions, compatibility evidence, check limits, and next bounded feature.
-- **FR-010**: Keep Astro static, strict TypeScript, Preact integration, and one npm lockfile. Do not add storage, scaling, search, cooking mode, offline support, AI APIs, deployment, branding, or backend features.
+- **FR-010**: Keep Astro static, strict TypeScript, Preact integration, and one npm lockfile. The foundation implementation does not add storage, scaling, search, cooking mode, offline support, AI APIs, deployment, branding, or backend features. This foundation scope does not prohibit a separately specified feature that complies with the constitution.
 
 ### Key Entities
 
